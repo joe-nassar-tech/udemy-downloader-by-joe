@@ -1,0 +1,11 @@
+[
+    {
+        "name": "example_cookie",
+        "value": "example_value",
+        "domain": ".udemy.com",
+        "path": "/",
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "no_restriction"
+    }
+]

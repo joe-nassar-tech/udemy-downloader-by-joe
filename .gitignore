@@ -1,0 +1,96 @@
+# ===============================================
+# Udemy Downloader By Joe - Git Ignore File
+# ===============================================
+
+# === SENSITIVE DATA (NEVER COMMIT) ===
+# Authentication files
+cookie*
+*.txt
+*.json
+.env
+
+# Personal data
+downloads/
+courses/
+output/
+**/output/**
+**/courses/**
+**/downloads/**
+
+# Cache and logs
+logs/
+*.log
+cache/
+*.cache
+course.json
+course_*.json
+curriculum.json
+
+# === PYTHON FILES ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# === VIRTUAL ENVIRONMENTS ===
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# === IDE FILES ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === BUILD FILES ===
+*.spec
+*.exe
+*.zip
+*.tar.gz
+*.dmg
+*.pkg
+
+# === SYSTEM FILES ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# === TEMPORARY FILES ===
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Keep example files
+!env.example
+!cookies.json
+!*.md
+!LICENSE
+!requirements.txt
