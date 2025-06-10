@@ -1,5 +1,9 @@
 # ⚖️ LEGAL DISCLAIMER
 
+## 🚨 PROSECUTION WARNING
+
+**⚠️ CRITICAL NOTICE**: If you use this tool while violating any terms of service, copyright laws, or applicable regulations, **you will be prosecuted to the full extent of the law**. Legal action may be taken against violators.
+
 ## 🎓 Educational Purpose Only
 
 **IMPORTANT**: This software is developed and distributed strictly for **educational and research purposes only**. It is intended to help users understand web technologies, HTTP protocols, and video streaming mechanisms.
