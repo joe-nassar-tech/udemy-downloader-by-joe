@@ -1,0 +1,125 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0.0, v2.1.3, etc.
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Create Release Archive
+      run: |
+        # Create a clean directory for the release
+        mkdir -p release-package
+        
+        # Copy main application files
+        cp main.py release-package/
+        cp get_course.py release-package/
+        cp cache_manager.py release-package/
+        cp download_cache.py release-package/
+        cp constants.py release-package/
+        cp requirements.txt release-package/
+        cp README.md release-package/
+        cp LICENSE release-package/
+        cp LEGAL_DISCLAIMER.md release-package/
+        cp CONTRIBUTING.md release-package/
+        cp env.example release-package/
+        cp .gitignore release-package/
+        
+        # Copy utils directory
+        cp -r utils/ release-package/
+        
+        # Copy executables
+        cp n_m3u8dl-re.exe release-package/ 2>/dev/null || echo "n_m3u8dl-re.exe not found, skipping"
+        cp shaka-packager.exe release-package/ 2>/dev/null || echo "shaka-packager.exe not found, skipping"
+        
+        # Create example files
+        touch release-package/cookies.txt
+        touch release-package/cookies.json
+        
+        # Create directories
+        mkdir -p release-package/courses
+        mkdir -p release-package/logs
+        
+        # Create zip archive
+        cd release-package
+        zip -r ../udemy-downloader-by-joe-${{ github.ref_name }}.zip .
+        cd ..
+        
+    - name: Extract release notes
+      id: extract_notes
+      run: |
+        # Extract version from tag
+        VERSION=${{ github.ref_name }}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+        # Create release notes
+        cat > release_notes.md << 'EOF'
+        ## 🚀 Udemy Downloader By Joe ${{ github.ref_name }}
+        
+        ### ✨ Features
+        - 📺 Download complete Udemy courses (videos, subtitles, articles, assets)
+        - 🔐 Support for DRM-protected content with Widevine decryption
+        - ⚡ Multi-threaded concurrent downloads
+        - 🎯 Selective chapter/lecture downloading
+        - 📝 Multiple subtitle formats and languages
+        - 🎨 Beautiful progress indicators
+        - ⚙️ Easy configuration with .env files
+        
+        ### 📋 Requirements
+        - Python 3.8+
+        - FFmpeg
+        - Valid Udemy cookies
+        
+        ### 🚀 Quick Start
+        1. Download and extract this release
+        2. Install Python dependencies: `pip install -r requirements.txt`
+        3. Configure your cookies and environment (see README.md)
+        4. Run: `python main.py --url "your-course-url"`
+        
+        ### 📖 Documentation
+        See the included README.md for complete installation and usage instructions.
+        
+        ### ⚠️ Important
+        This tool is for educational purposes only. Please respect Udemy's Terms of Service.
+        EOF
+        
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Udemy Downloader By Joe ${{ github.ref_name }}
+        body_path: release_notes.md
+        draft: false
+        prerelease: false
+        
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./udemy-downloader-by-joe-${{ github.ref_name }}.zip
+        asset_name: udemy-downloader-by-joe-${{ github.ref_name }}.zip
+        asset_content_type: application/zip 

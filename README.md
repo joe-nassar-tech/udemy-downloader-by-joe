@@ -70,7 +70,7 @@ A powerful, feature-rich Udemy course downloader that supports both regular and 
 ### Method 2: Clone Repository
 1. Clone this repository:
    ```bash
-   git clone https://github.com/JoeNassar1/udemy-downloader-by-joe.git
+   git clone https://github.com/joe-nassar-tech/udemy-downloader-by-joe.git
    cd udemy-downloader-by-joe
    ```
 
