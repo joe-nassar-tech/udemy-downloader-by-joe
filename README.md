@@ -36,28 +36,25 @@ A powerful, feature-rich Udemy course downloader that supports both regular and 
    - Download from [python.org](https://www.python.org/downloads/)
    - Make sure to add Python to PATH during installation
 
-2. **FFmpeg**
-   - Download from [ffmpeg.org](https://ffmpeg.org/download.html)
-   - Add to system PATH
-   - Or use package manager:
-     ```bash
-     # Windows (using Chocolatey)
-     choco install ffmpeg
-     
-     # macOS (using Homebrew)
-     brew install ffmpeg
-     
-     # Ubuntu/Debian
-     sudo apt update && sudo apt install ffmpeg
-     ```
+2. **FFmpeg** (Required for video processing)
+   - **Windows**: Download from [ffmpeg.org](https://ffmpeg.org/download.html), extract to `C:\ffmpeg`, add `C:\ffmpeg\bin` to PATH
+   - **macOS**: `brew install ffmpeg`
+   - **Linux**: `sudo apt install ffmpeg` (Ubuntu/Debian)
+   - **Verify**: Run `ffmpeg -version`
 
-3. **N_m3u8DL-RE**
-   - Download the latest release from [GitHub](https://github.com/nilaoda/N_m3u8DL-RE/releases)
-   - Place `n_m3u8dl-re.exe` in the project folder or add to PATH
+3. **N_m3u8DL-RE** (Video Downloader)
+   - Download from [N_m3u8DL-RE Releases](https://github.com/nilaoda/N_m3u8DL-RE/releases)
+   - **Windows**: Download `N_m3u8DL-RE_Beta_win-x64.zip`, rename exe to `n_m3u8dl-re.exe`
+   - **macOS/Linux**: Download appropriate version, rename to `n_m3u8dl-re`
+   - Place in your project folder
 
-4. **Shaka Packager** (for DRM content)
-   - Download from [GitHub](https://github.com/shaka-project/shaka-packager/releases)
-   - Place `shaka-packager.exe` in the project folder or add to PATH
+4. **Shaka Packager** (For DRM content only)
+   - Download from [Shaka Packager Releases](https://github.com/shaka-project/shaka-packager/releases)
+   - **Windows**: Download `packager-win-x64.exe`, rename to `shaka-packager.exe`
+   - **macOS/Linux**: Download appropriate version, rename to `shaka-packager`
+   - Place in your project folder
+
+> 📝 **Note**: For detailed step-by-step instructions, see [Complete Documentation](docs/documentation.md)
 
 ## 🚀 Installation
 

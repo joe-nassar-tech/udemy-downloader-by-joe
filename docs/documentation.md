@@ -66,56 +66,295 @@ sudo apt install python3 python3-pip
 
 ### Step 2: Install FFmpeg
 
+FFmpeg is a crucial multimedia framework required for video processing and conversion. Here are detailed installation instructions for beginners:
+
 #### Windows
-**Option A: Manual Installation**
-1. Download from [ffmpeg.org](https://ffmpeg.org/download.html)
-2. Extract to `C:\ffmpeg`
-3. Add `C:\ffmpeg\bin` to system PATH
 
-**Option B: Using Chocolatey**
-```cmd
-choco install ffmpeg
-```
+##### Option A: Manual Installation (Recommended for Beginners)
 
-**Option C: Using Winget**
-```cmd
-winget install ffmpeg
-```
+1. **Download FFmpeg**:
+   - Go to [https://ffmpeg.org/download.html](https://ffmpeg.org/download.html)
+   - Click on "Windows" and then "Windows builds by BtbN"
+   - Download the latest "release" version (NOT essentials)
+   - Choose `ffmpeg-master-latest-win64-gpl.zip`
+
+2. **Extract FFmpeg**:
+   - Create a new folder: `C:\ffmpeg`
+   - Extract the downloaded ZIP file
+   - Copy all contents from the extracted folder to `C:\ffmpeg`
+   - You should have: `C:\ffmpeg\bin\ffmpeg.exe`
+
+3. **Add to System PATH** (Critical Step):
+   - Press `Windows + R`, type `sysdm.cpl`, press Enter
+   - Click "Environment Variables" button
+   - In "System Variables" section, find and select "Path"
+   - Click "Edit" → "New"
+   - Add: `C:\ffmpeg\bin`
+   - Click "OK" on all windows
+   - **Restart your command prompt/terminal**
+
+4. **Verify Installation**:
+   ```cmd
+   ffmpeg -version
+   ```
+   You should see FFmpeg version information.
+
+##### Option B: Using Chocolatey (For Advanced Users)
+
+1. **Install Chocolatey first** (if not installed):
+   - Open PowerShell as Administrator
+   - Run: 
+   ```powershell
+   Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+   ```
+
+2. **Install FFmpeg**:
+   ```cmd
+   choco install ffmpeg
+   ```
+
+##### Option C: Using Winget (Windows 10/11)
+
+1. **Open Command Prompt or PowerShell**
+2. **Install FFmpeg**:
+   ```cmd
+   winget install "FFmpeg (Essentials Build)"
+   ```
 
 #### macOS
-```bash
-brew install ffmpeg
-```
+
+##### Using Homebrew (Recommended)
+
+1. **Install Homebrew** (if not installed):
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. **Install FFmpeg**:
+   ```bash
+   brew install ffmpeg
+   ```
+
+3. **Verify Installation**:
+   ```bash
+   ffmpeg -version
+   ```
+
+##### Manual Installation (Alternative)
+
+1. Download from [https://evermeet.cx/ffmpeg/](https://evermeet.cx/ffmpeg/)
+2. Extract and move to `/usr/local/bin/`
+3. Make executable: `chmod +x /usr/local/bin/ffmpeg`
 
 #### Linux
+
+##### Ubuntu/Debian
 ```bash
-# Ubuntu/Debian
+# Update package list
+sudo apt update
+
+# Install FFmpeg
 sudo apt install ffmpeg
 
-# CentOS/RHEL
-sudo yum install ffmpeg
-
-# Arch Linux
-sudo pacman -S ffmpeg
+# Verify installation
+ffmpeg -version
 ```
+
+##### CentOS/RHEL/Fedora
+```bash
+# Enable EPEL repository (CentOS/RHEL)
+sudo yum install epel-release
+
+# Install FFmpeg
+sudo yum install ffmpeg
+# OR for newer versions
+sudo dnf install ffmpeg
+
+# Verify installation
+ffmpeg -version
+```
+
+##### Arch Linux
+```bash
+# Install FFmpeg
+sudo pacman -S ffmpeg
+
+# Verify installation
+ffmpeg -version
+```
+
+---
 
 ### Step 3: Download Required Tools
 
-#### N_m3u8DL-RE
-1. Visit [N_m3u8DL-RE Releases](https://github.com/nilaoda/N_m3u8DL-RE/releases)
-2. Download the appropriate version:
-   - **Windows**: `N_m3u8DL-RE_Beta_win-x64.zip`
-   - **macOS**: `N_m3u8DL-RE_Beta_osx-x64.tar.gz`
-   - **Linux**: `N_m3u8DL-RE_Beta_linux-x64.tar.gz`
-3. Extract and rename executable to `n_m3u8dl-re.exe` (Windows) or `n_m3u8dl-re`
+#### 🚀 N_m3u8DL-RE (Video Downloader)
 
-#### Shaka Packager (for DRM content)
-1. Visit [Shaka Packager Releases](https://github.com/shaka-project/shaka-packager/releases)
-2. Download the appropriate version:
-   - **Windows**: `packager-win-x64.exe`
-   - **macOS**: `packager-osx-x64`
-   - **Linux**: `packager-linux-x64`
-3. Rename to `shaka-packager.exe` (Windows) or `shaka-packager`
+This tool is essential for downloading video content. Follow these detailed steps:
+
+##### For Windows Users:
+
+1. **Visit the Release Page**:
+   - Go to [https://github.com/nilaoda/N_m3u8DL-RE/releases](https://github.com/nilaoda/N_m3u8DL-RE/releases)
+   - Look for the latest release (green "Latest" tag)
+
+2. **Download the Correct File**:
+   - Scroll down to "Assets"
+   - Download: `N_m3u8DL-RE_Beta_win-x64.zip`
+   - **File size should be around 15-20 MB**
+
+3. **Extract and Setup**:
+   - Extract the ZIP file to a temporary folder
+   - Find the executable file (usually named `N_m3u8DL-RE.exe`)
+   - **IMPORTANT**: Rename it to `n_m3u8dl-re.exe` (lowercase with dashes)
+   - Copy `n_m3u8dl-re.exe` to your project folder
+
+4. **Final Location**:
+   ```
+   udemy-downloader-by-joe/
+   ├── main.py
+   ├── n_m3u8dl-re.exe  ← Should be here
+   └── other files...
+   ```
+
+##### For macOS Users:
+
+1. **Download**:
+   - From the same releases page, download: `N_m3u8DL-RE_Beta_osx-x64.tar.gz`
+
+2. **Extract and Setup**:
+   ```bash
+   # Extract the file
+   tar -xzf N_m3u8DL-RE_Beta_osx-x64.tar.gz
+   
+   # Make executable
+   chmod +x N_m3u8DL-RE
+   
+   # Rename and move to project folder
+   mv N_m3u8DL-RE /path/to/udemy-downloader-by-joe/n_m3u8dl-re
+   ```
+
+##### For Linux Users:
+
+1. **Download**:
+   - Download: `N_m3u8DL-RE_Beta_linux-x64.tar.gz`
+
+2. **Extract and Setup**:
+   ```bash
+   # Extract the file
+   tar -xzf N_m3u8DL-RE_Beta_linux-x64.tar.gz
+   
+   # Make executable
+   chmod +x N_m3u8DL-RE
+   
+   # Rename and move to project folder
+   mv N_m3u8DL-RE /path/to/udemy-downloader-by-joe/n_m3u8dl-re
+   ```
+
+#### 🔐 Shaka Packager (For DRM Content)
+
+This tool is needed only for DRM-protected courses:
+
+##### For Windows Users:
+
+1. **Visit the Release Page**:
+   - Go to [https://github.com/shaka-project/shaka-packager/releases](https://github.com/shaka-project/shaka-packager/releases)
+   - Look for the latest release
+
+2. **Download the Correct File**:
+   - Download: `packager-win-x64.exe`
+   - **File size should be around 4-6 MB**
+
+3. **Setup**:
+   - **IMPORTANT**: Rename to `shaka-packager.exe`
+   - Place in your project folder
+
+4. **Final Location**:
+   ```
+   udemy-downloader-by-joe/
+   ├── main.py
+   ├── n_m3u8dl-re.exe
+   ├── shaka-packager.exe  ← Should be here
+   └── other files...
+   ```
+
+##### For macOS Users:
+
+1. **Download**:
+   - Download: `packager-osx-x64`
+
+2. **Setup**:
+   ```bash
+   # Make executable
+   chmod +x packager-osx-x64
+   
+   # Rename and move to project folder
+   mv packager-osx-x64 /path/to/udemy-downloader-by-joe/shaka-packager
+   ```
+
+##### For Linux Users:
+
+1. **Download**:
+   - Download: `packager-linux-x64`
+
+2. **Setup**:
+   ```bash
+   # Make executable
+   chmod +x packager-linux-x64
+   
+   # Rename and move to project folder
+   mv packager-linux-x64 /path/to/udemy-downloader-by-joe/shaka-packager
+   ```
+
+#### 📁 Where Should the .exe Files Be Located?
+
+Your project folder should look exactly like this:
+
+```
+📁 udemy-downloader-by-joe/
+├── 📄 main.py
+├── 📄 get_course.py
+├── 📄 requirements.txt
+├── 📄 .env (you'll create this)
+├── 📄 cookies.json (you'll create this)
+├── 🔧 n_m3u8dl-re.exe (Windows) or n_m3u8dl-re (macOS/Linux)
+├── 🔧 shaka-packager.exe (Windows) or shaka-packager (macOS/Linux)
+├── 📁 utils/
+├── 📁 docs/
+└── 📁 courses/ (will be created automatically)
+```
+
+#### ✅ Verification Steps
+
+After placing all files, verify everything is working:
+
+1. **Test FFmpeg**:
+   ```bash
+   ffmpeg -version
+   ```
+
+2. **Test N_m3u8DL-RE**:
+   ```bash
+   # Windows
+   .\n_m3u8dl-re.exe --version
+   
+   # macOS/Linux
+   ./n_m3u8dl-re --version
+   ```
+
+3. **Test Shaka Packager**:
+   ```bash
+   # Windows
+   .\shaka-packager.exe --version
+   
+   # macOS/Linux
+   ./shaka-packager --version
+   ```
+
+If any command fails, double-check:
+- File names are exactly as specified (case-sensitive)
+- Files are in the correct location
+- Files have proper permissions (executable on macOS/Linux)
+- PATH is set correctly for FFmpeg
 
 ### Step 4: Download and Setup the Downloader
 
