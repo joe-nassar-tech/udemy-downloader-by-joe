@@ -20,7 +20,7 @@ Udemy Downloader By Joe is an educational software tool designed to help users d
 
 ### Advanced Capabilities
 
-**Resume Downloads**: If a download is interrupted due to network issues or other problems, the tool can resume from where it left off rather than starting over completely. This saves time and bandwidth, especially for large courses.
+**Smart Resume System**: The tool features an intelligent cache and resume system that ensures zero progress loss. If downloads are interrupted due to network issues, system crashes, or other problems, the tool automatically resumes from exactly where it left off. The system tracks every download attempt, verifies file integrity, and provides detailed progress analytics. Failed downloads are logged with error information and can be selectively retried without affecting completed content.
 
 **Concurrent Processing**: The software can download multiple files simultaneously, significantly reducing the total time required to download large courses with many lectures.
 

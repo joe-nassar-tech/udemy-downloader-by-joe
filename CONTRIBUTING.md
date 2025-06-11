@@ -46,11 +46,13 @@ By contributing, you agree that:
 ## 💡 Ideas for Contributions
 
 - Performance improvements
-- Better error handling
+- Better error handling  
+- Cache system enhancements (see `download_cache.py` and `cache_manager.py`)
 - Documentation improvements
 - Cross-platform compatibility
 - Security enhancements
 - Educational examples and tutorials
+- Resume system optimizations
 
 ## 📞 Contact
 

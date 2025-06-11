@@ -21,6 +21,8 @@ A powerful, feature-rich Udemy course downloader that supports both regular and 
 - 🔐 **DRM Support**: Download DRM-protected videos using Widevine decryption
 - ⚡ **Concurrent Downloads**: Multi-threaded downloading for faster speeds
 - 🎯 **Selective Download**: Choose specific chapters, lectures, or ranges to download
+- 💾 **Smart Resume System**: Automatic download resumption with zero progress loss
+- 🔄 **Intelligent Cache**: Tracks progress, handles failures, and enables selective retry
 - 📝 **Multiple Formats**: Support for subtitles in various languages and SRT conversion
 - 🎨 **Beautiful Progress**: Rich progress bars and real-time download status
 - ⚙️ **Environment Configuration**: Easy setup with `.env` file support
@@ -215,6 +217,8 @@ python main.py --id 1234567 --skip-articles --skip-assignments
 | `--save` | Save curriculum to file | `--save curriculum.json` |
 | `--load` | Load curriculum from file | `--load curriculum.json` |
 | `--tree` | Show course tree | `--tree` |
+| `--show-cache` | Show download progress | `--show-cache` |
+| `--clear-cache` | Clear cache and restart | `--clear-cache` |
 
 ## 🔧 DRM Content Support
 

@@ -12,9 +12,10 @@ This comprehensive guide will walk you through every step of setting up and usin
 6. [Usage Scenarios](#usage-scenarios)
 7. [DRM Content Handling](#drm-content-handling)
 8. [Advanced Features](#advanced-features)
-9. [Troubleshooting Guide](#troubleshooting-guide)
-10. [Performance Optimization](#performance-optimization)
-11. [Best Practices](#best-practices)
+9. [Download Cache & Resume System](#download-cache--resume-system)
+10. [Troubleshooting Guide](#troubleshooting-guide)
+11. [Performance Optimization](#performance-optimization)
+12. [Best Practices](#best-practices)
 
 ---
 
@@ -663,6 +664,288 @@ done
 # Using Task Scheduler (Windows)
 # Create task to run script at specific times
 ```
+
+---
+
+## Download Cache & Resume System
+
+### Overview
+
+The Udemy Downloader By Joe features an intelligent cache and resume system that ensures **zero progress loss** during downloads. This system automatically tracks every download attempt, handles failures gracefully, and provides powerful recovery mechanisms.
+
+### How It Works
+
+```mermaid
+flowchart TD
+    A["Start Download"] --> B["Initialize DownloadCache"]
+    B --> C["Load/Create Cache File"]
+    C --> D{"Cache File Exists?"}
+    D -->|Yes| E["Load Previous Progress"]
+    D -->|No| F["Create New Cache"]
+    E --> G["Show Progress Summary"]
+    F --> G
+    G --> H["Start Download Process"]
+    
+    H --> I["For Each Lecture"]
+    I --> J["Generate Unique Key"]
+    J --> K{"Already Completed?"}
+    K -->|Yes| L["Skip Download"]
+    K -->|No| M["Mark as Started"]
+    
+    M --> N["Download Lecture"]
+    N --> O{"Download Success?"}
+    O -->|Yes| P["Mark as Completed"]
+    O -->|No| Q["Mark as Failed"]
+    
+    P --> R["Update Cache File"]
+    Q --> S["Store Error Info"]
+    S --> R
+    L --> R
+    R --> T{"More Lectures?"}
+    T -->|Yes| I
+    T -->|No| U["Download Complete"]
+    
+    V["Cache Management"] --> W["View Progress"]
+    V --> X["Clear Cache"]
+    V --> Y["Reset Failed Downloads"]
+```
+
+### Key Features
+
+#### 🧠 **Intelligent Resume**
+- **Automatic Recovery**: Picks up exactly where downloads were interrupted
+- **File Verification**: Checks file existence and integrity before skipping
+- **Smart Detection**: Identifies completed downloads even if cache is corrupted
+
+#### 🔄 **Failure Handling**
+- **Error Tracking**: Records detailed error information for each failed download
+- **Retry Management**: Tracks attempt counts and prevents infinite loops
+- **Selective Recovery**: Only retries actual failures, not completed downloads
+
+#### 📊 **Progress Tracking**
+- **Real-time Status**: Shows completed, failed, and remaining downloads
+- **Detailed Analytics**: Progress percentages and completion estimates
+- **Error Reporting**: Comprehensive failure analysis and diagnostics
+
+### Cache Structure
+
+Each course gets its own cache file stored in `cache/course_{course_id}.json`:
+
+```json
+{
+  "course_id": "1234567",
+  "created_at": "2024-01-15T10:30:00",
+  "last_updated": "2024-01-15T12:45:30",
+  "total_downloads": 156,
+  "completed_downloads": 142,
+  "failed_downloads": 3,
+  "downloads": {
+    "a1b2c3d4e5f6": {
+      "chapter_index": 2,
+      "lecture_index": 5,
+      "lecture_title": "Understanding Variables",
+      "lecture_id": 12345,
+      "asset_type": "Video",
+      "status": "completed",
+      "started_at": "2024-01-15T10:35:15",
+      "completed_at": "2024-01-15T10:38:42",
+      "file_path": "/courses/Chapter 2/05. Understanding Variables.mp4",
+      "file_size": 157892345,
+      "attempts": 1
+    }
+  }
+}
+```
+
+### Download States
+
+The system tracks four main states for each download:
+
+1. **`started`** - Download initiated, tracking begins
+2. **`completed`** - Successfully downloaded and verified
+3. **`failed`** - Download failed, error logged
+4. **`pending`** - Reset from failed state for retry
+
+### Using the Cache System
+
+#### Automatic Operation
+
+The cache system works automatically with no configuration required:
+
+```bash
+# Normal download - cache is handled transparently
+python main.py --id 1234567
+
+# If interrupted, simply run again - it resumes automatically
+python main.py --id 1234567
+```
+
+#### Viewing Cache Status
+
+```bash
+# Show detailed progress for a specific course
+python main.py --show-cache --id 1234567
+
+# Output:
+# ======================================
+# 📊 DOWNLOAD PROGRESS SUMMARY
+# ======================================
+# 📁 Course ID: 1234567
+# 📊 Total Downloads: 156
+# ✅ Completed: 142
+# ❌ Failed: 3
+# ⏳ In Progress: 11
+# 📈 Completion Rate: 91.0%
+```
+
+#### Managing Cache with Built-in Tools
+
+```bash
+# View all course caches
+python cache_manager.py --list
+
+# Show detailed information for a specific course
+python cache_manager.py --show 1234567
+
+# Reset failed downloads for retry
+python cache_manager.py --reset-failed 1234567
+
+# Clear cache completely (start fresh)
+python cache_manager.py --clear 1234567
+```
+
+#### Command Line Cache Options
+
+```bash
+# Clear cache and restart download from beginning
+python main.py --clear-cache --id 1234567
+
+# View cache status and exit (no download)
+python main.py --show-cache --id 1234567
+```
+
+### Advanced Cache Management
+
+#### Working with Failed Downloads
+
+When downloads fail, the system provides detailed information:
+
+```bash
+python cache_manager.py --show 1234567
+
+# Example output:
+# ❌ FAILED DOWNLOADS:
+# ----------------------------------------
+# 📄 Advanced JavaScript Concepts
+#    Chapter: 5, Lecture: 12
+#    Error: Connection timeout after 60 seconds
+#    Attempts: 3
+```
+
+#### Selective Recovery
+
+```bash
+# Reset only failed downloads for retry
+python cache_manager.py --reset-failed 1234567
+
+# Continue download - only failed items will be retried
+python main.py --id 1234567
+```
+
+#### Cache File Locations
+
+```
+project_folder/
+├── cache/
+│   ├── course_1234567.json    # Course 1 cache
+│   ├── course_2345678.json    # Course 2 cache
+│   └── course_3456789.json    # Course 3 cache
+├── main.py
+└── cache_manager.py
+```
+
+### Troubleshooting Cache Issues
+
+#### Cache Corruption
+
+If cache becomes corrupted:
+
+```bash
+# Method 1: Clear and restart
+python main.py --clear-cache --id 1234567
+
+# Method 2: Manual deletion
+rm cache/course_1234567.json
+```
+
+#### Inconsistent State
+
+If cache shows wrong progress:
+
+```bash
+# Verify file existence
+python cache_manager.py --show 1234567
+
+# Clear cache if files are missing
+python cache_manager.py --clear 1234567
+```
+
+#### Disk Space Issues
+
+```bash
+# Check cache size
+du -sh cache/
+
+# Clean old caches (optional)
+find cache/ -name "*.json" -mtime +30 -delete
+```
+
+### Best Practices
+
+#### Regular Monitoring
+
+```bash
+# Check progress periodically
+python main.py --show-cache --id 1234567
+
+# Monitor during long downloads
+watch -n 30 'python main.py --show-cache --id 1234567'
+```
+
+#### Backup Important Caches
+
+```bash
+# Backup cache files for large downloads
+cp cache/course_1234567.json cache/course_1234567.json.backup
+```
+
+#### Network Optimization
+
+```bash
+# For unstable connections, use lower concurrency
+python main.py --id 1234567 --concurrent 2
+
+# This reduces failures and improves cache effectiveness
+```
+
+### Cache Performance Benefits
+
+#### Time Savings
+- **No Re-downloads**: Skip completed content automatically
+- **Selective Retry**: Only retry actual failures
+- **Instant Resume**: Continue immediately from interruption point
+
+#### Bandwidth Efficiency
+- **Smart Skipping**: Avoids re-downloading working files
+- **Failure Analysis**: Identifies network vs. content issues
+- **Optimized Retry**: Only retries when necessary
+
+#### Reliability
+- **Corruption Protection**: Verifies file integrity
+- **State Persistence**: Survives system crashes and restarts
+- **Error Intelligence**: Learns from failures to improve success rates
+
+The cache system makes the Udemy Downloader By Joe highly resilient and user-friendly, ensuring that no matter what happens during a download session, your progress is never lost!
 
 ---
 
