@@ -677,37 +677,37 @@ The Udemy Downloader By Joe features an intelligent cache and resume system that
 
 ```mermaid
 flowchart TD
-    A["Start Download"] --> B["Initialize DownloadCache"]
-    B --> C["Load/Create Cache File"]
-    C --> D{"Cache File Exists?"}
-    D -->|Yes| E["Load Previous Progress"]
-    D -->|No| F["Create New Cache"]
-    E --> G["Show Progress Summary"]
+    A[Start Download] --> B[Initialize DownloadCache]
+    B --> C[Load/Create Cache File]
+    C --> D{Cache File Exists?}
+    D -->|Yes| E[Load Previous Progress]
+    D -->|No| F[Create New Cache]
+    E --> G[Show Progress Summary]
     F --> G
-    G --> H["Start Download Process"]
+    G --> H[Start Download Process]
     
-    H --> I["For Each Lecture"]
-    I --> J["Generate Unique Key"]
-    J --> K{"Already Completed?"}
-    K -->|Yes| L["Skip Download"]
-    K -->|No| M["Mark as Started"]
+    H --> I[For Each Lecture]
+    I --> J[Generate Unique Key]
+    J --> K{Already Completed?}
+    K -->|Yes| L[Skip Download]
+    K -->|No| M[Mark as Started]
     
-    M --> N["Download Lecture"]
-    N --> O{"Download Success?"}
-    O -->|Yes| P["Mark as Completed"]
-    O -->|No| Q["Mark as Failed"]
+    M --> N[Download Lecture]
+    N --> O{Download Success?}
+    O -->|Yes| P[Mark as Completed]
+    O -->|No| Q[Mark as Failed]
     
-    P --> R["Update Cache File"]
-    Q --> S["Store Error Info"]
+    P --> R[Update Cache File]
+    Q --> S[Store Error Info]
     S --> R
     L --> R
-    R --> T{"More Lectures?"}
+    R --> T{More Lectures?}
     T -->|Yes| I
-    T -->|No| U["Download Complete"]
+    T -->|No| U[Download Complete]
     
-    V["Cache Management"] --> W["View Progress"]
-    V --> X["Clear Cache"]
-    V --> Y["Reset Failed Downloads"]
+    V[Cache Management] --> W[View Progress]
+    V --> X[Clear Cache]
+    V --> Y[Reset Failed Downloads]
 ```
 
 ### Key Features

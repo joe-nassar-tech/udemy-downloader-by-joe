@@ -307,17 +307,40 @@ python main.py --id 1234567 --save course_curriculum.json --tree course_tree.txt
 - **Storage**: Ensure sufficient disk space
 - **System**: Close unnecessary applications during download
 
+## 📚 Documentation
+
+Comprehensive documentation is available in the [`docs/`](docs/) folder:
+
+### 📖 Available Documentation
+
+| Document | Description |
+|----------|-------------|
+| **[📘 Complete Documentation](docs/documentation.md)** | **Main technical guide** - Step-by-step installation, configuration, usage scenarios, DRM handling, cache system details, and troubleshooting |
+| **[🧪 Testing Guide](docs/test.md)** | **Comprehensive testing procedures** - Test every feature from basic setup to advanced functionality, includes automated testing scripts |
+| **[📋 Project Summary](docs/SUMMARY.md)** | **Project overview** - What the tool does, capabilities, use cases, and technical features explanation |
+| **[🤝 Contributing Guide](docs/CONTRIBUTING.md)** | **Development guide** - How to contribute, code standards, legal requirements, and development best practices |
+| **[⚖️ Legal Disclaimer](docs/LEGAL_DISCLAIMER.md)** | **Important legal information** - Terms of use, responsibilities, and compliance requirements |
+
+### 🚀 Quick Start
+
+1. **New Users**: Start with [📘 Complete Documentation](docs/documentation.md)
+2. **Developers**: Check [🤝 Contributing Guide](docs/CONTRIBUTING.md)
+3. **Testing**: Use [🧪 Testing Guide](docs/test.md) to verify functionality
+4. **Legal**: Read [⚖️ Legal Disclaimer](docs/LEGAL_DISCLAIMER.md) before use
+
 ## 📄 License
 
 This project is for educational purposes only. Please respect Udemy's Terms of Service and only download courses you have legitimate access to.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
+Contributions are welcome! Please read our [Contributing Guide](docs/CONTRIBUTING.md) for detailed information on how to contribute to this project.
 
 ## ⚠️ Disclaimer
 
-This tool is intended for personal use only. Users are responsible for complying with Udemy's Terms of Service and applicable laws. The developers assume no responsibility for misuse of this tool.
+This tool is intended for personal use only. Users are responsible for complying with Udemy's Terms of Service and applicable laws. The developers assume no responsibility for misuse of this tool. 
+
+**Please read the [Legal Disclaimer](docs/LEGAL_DISCLAIMER.md) before using this software.**
 
 ---
 
