@@ -22,6 +22,7 @@ This comprehensive guide will walk you through every step of setting up and usin
 ## System Requirements
 
 ### Minimum Requirements
+
 - **Operating System**: Windows 10/11, macOS 10.14+, Ubuntu 18.04+
 - **Python**: Version 3.8 or higher
 - **RAM**: 4GB minimum, 8GB recommended
@@ -29,6 +30,7 @@ This comprehensive guide will walk you through every step of setting up and usin
 - **Internet**: Stable broadband connection (recommended: 10+ Mbps)
 
 ### Recommended Specifications
+
 - **CPU**: Quad-core processor for optimal concurrent downloads
 - **RAM**: 16GB for large courses with high concurrency
 - **Storage**: SSD with 100GB+ free space
@@ -41,16 +43,19 @@ This comprehensive guide will walk you through every step of setting up and usin
 ### Step 1: Install Python
 
 #### Windows
+
 1. Visit [python.org](https://www.python.org/downloads/)
 2. Download Python 3.11 or later
 3. **Important**: Check "Add Python to PATH" during installation
 4. Verify installation:
+
    ```cmd
    python --version
    pip --version
    ```
 
 #### macOS
+
 ```bash
 # Using Homebrew (recommended)
 brew install python
@@ -59,6 +64,7 @@ brew install python
 ```
 
 #### Linux (Ubuntu/Debian)
+
 ```bash
 sudo apt update
 sudo apt install python3 python3-pip
@@ -94,21 +100,25 @@ FFmpeg is a crucial multimedia framework required for video processing and conve
    - **Restart your command prompt/terminal**
 
 4. **Verify Installation**:
+
    ```cmd
    ffmpeg -version
    ```
+
    You should see FFmpeg version information.
 
 ##### Option B: Using Chocolatey (For Advanced Users)
 
 1. **Install Chocolatey first** (if not installed):
    - Open PowerShell as Administrator
-   - Run: 
+   - Run:
+
    ```powershell
    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
    ```
 
 2. **Install FFmpeg**:
+
    ```cmd
    choco install ffmpeg
    ```
@@ -117,6 +127,7 @@ FFmpeg is a crucial multimedia framework required for video processing and conve
 
 1. **Open Command Prompt or PowerShell**
 2. **Install FFmpeg**:
+
    ```cmd
    winget install "FFmpeg (Essentials Build)"
    ```
@@ -126,16 +137,19 @@ FFmpeg is a crucial multimedia framework required for video processing and conve
 ##### Using Homebrew (Recommended)
 
 1. **Install Homebrew** (if not installed):
+
    ```bash
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
 
 2. **Install FFmpeg**:
+
    ```bash
    brew install ffmpeg
    ```
 
 3. **Verify Installation**:
+
    ```bash
    ffmpeg -version
    ```
@@ -149,6 +163,7 @@ FFmpeg is a crucial multimedia framework required for video processing and conve
 #### Linux
 
 ##### Ubuntu/Debian
+
 ```bash
 # Update package list
 sudo apt update
@@ -161,6 +176,7 @@ ffmpeg -version
 ```
 
 ##### CentOS/RHEL/Fedora
+
 ```bash
 # Enable EPEL repository (CentOS/RHEL)
 sudo yum install epel-release
@@ -175,6 +191,7 @@ ffmpeg -version
 ```
 
 ##### Arch Linux
+
 ```bash
 # Install FFmpeg
 sudo pacman -S ffmpeg
@@ -191,7 +208,7 @@ ffmpeg -version
 
 This tool is essential for downloading video content. Follow these detailed steps:
 
-##### For Windows Users:
+##### For Windows Users
 
 1. **Visit the Release Page**:
    - Go to [https://github.com/nilaoda/N_m3u8DL-RE/releases](https://github.com/nilaoda/N_m3u8DL-RE/releases)
@@ -209,6 +226,7 @@ This tool is essential for downloading video content. Follow these detailed step
    - Copy `n_m3u8dl-re.exe` to your project folder
 
 4. **Final Location**:
+
    ```
    udemy-downloader-by-joe/
    ├── main.py
@@ -216,36 +234,38 @@ This tool is essential for downloading video content. Follow these detailed step
    └── other files...
    ```
 
-##### For macOS Users:
+##### For macOS Users
 
 1. **Download**:
    - From the same releases page, download: `N_m3u8DL-RE_Beta_osx-x64.tar.gz`
 
 2. **Extract and Setup**:
+
    ```bash
    # Extract the file
    tar -xzf N_m3u8DL-RE_Beta_osx-x64.tar.gz
-   
+
    # Make executable
    chmod +x N_m3u8DL-RE
-   
+
    # Rename and move to project folder
    mv N_m3u8DL-RE /path/to/udemy-downloader-by-joe/n_m3u8dl-re
    ```
 
-##### For Linux Users:
+##### For Linux Users
 
 1. **Download**:
    - Download: `N_m3u8DL-RE_Beta_linux-x64.tar.gz`
 
 2. **Extract and Setup**:
+
    ```bash
    # Extract the file
    tar -xzf N_m3u8DL-RE_Beta_linux-x64.tar.gz
-   
+
    # Make executable
    chmod +x N_m3u8DL-RE
-   
+
    # Rename and move to project folder
    mv N_m3u8DL-RE /path/to/udemy-downloader-by-joe/n_m3u8dl-re
    ```
@@ -254,7 +274,7 @@ This tool is essential for downloading video content. Follow these detailed step
 
 This tool is needed only for DRM-protected courses:
 
-##### For Windows Users:
+##### For Windows Users
 
 1. **Visit the Release Page**:
    - Go to [https://github.com/shaka-project/shaka-packager/releases](https://github.com/shaka-project/shaka-packager/releases)
@@ -269,6 +289,7 @@ This tool is needed only for DRM-protected courses:
    - Place in your project folder
 
 4. **Final Location**:
+
    ```
    udemy-downloader-by-joe/
    ├── main.py
@@ -277,30 +298,32 @@ This tool is needed only for DRM-protected courses:
    └── other files...
    ```
 
-##### For macOS Users:
+##### For macOS Users
 
 1. **Download**:
    - Download: `packager-osx-x64`
 
 2. **Setup**:
+
    ```bash
    # Make executable
    chmod +x packager-osx-x64
-   
+
    # Rename and move to project folder
    mv packager-osx-x64 /path/to/udemy-downloader-by-joe/shaka-packager
    ```
 
-##### For Linux Users:
+##### For Linux Users
 
 1. **Download**:
    - Download: `packager-linux-x64`
 
 2. **Setup**:
+
    ```bash
    # Make executable
    chmod +x packager-linux-x64
-   
+
    # Rename and move to project folder
    mv packager-linux-x64 /path/to/udemy-downloader-by-joe/shaka-packager
    ```
@@ -328,29 +351,33 @@ Your project folder should look exactly like this:
 After placing all files, verify everything is working:
 
 1. **Test FFmpeg**:
+
    ```bash
    ffmpeg -version
    ```
 
 2. **Test N_m3u8DL-RE**:
+
    ```bash
    # Windows
    .\n_m3u8dl-re.exe --version
-   
+
    # macOS/Linux
    ./n_m3u8dl-re --version
    ```
 
 3. **Test Shaka Packager**:
+
    ```bash
    # Windows
    .\shaka-packager.exe --version
-   
+
    # macOS/Linux
    ./shaka-packager --version
    ```
 
 If any command fails, double-check:
+
 - File names are exactly as specified (case-sensitive)
 - Files are in the correct location
 - Files have proper permissions (executable on macOS/Linux)
@@ -359,11 +386,13 @@ If any command fails, double-check:
 ### Step 4: Download and Setup the Downloader
 
 #### Option A: Download Release (Recommended)
+
 1. Go to the [Releases page](../../releases)
 2. Download the latest `udemy-downloader-by-joe.zip`
 3. Extract to your desired location (e.g., `C:\Tools\udemy-downloader-by-joe`)
 
 #### Option B: Clone from GitHub
+
 ```bash
 git clone https://github.com/your-username/udemy-downloader-by-joe.git
 cd udemy-downloader-by-joe
@@ -379,6 +408,7 @@ pip install -r requirements.txt
 ```
 
 If you encounter permission issues on Windows:
+
 ```cmd
 pip install --user -r requirements.txt
 ```
@@ -386,6 +416,7 @@ pip install --user -r requirements.txt
 ### Step 6: Place Executable Files
 
 Place the downloaded tools in the project folder:
+
 ```
 udemy-downloader-by-joe/
 ├── main.py
@@ -449,19 +480,22 @@ udemy-downloader-by-joe/
 ### Method 2: Netscape Format Cookies
 
 Use tools like:
+
 - [Get cookies.txt](https://chrome.google.com/webstore/detail/get-cookiestxt/bgaddhkoddajcdgocldbbfleckgcbcid)
 - Command line tools like `cookies.txt`
 
 Save as `cookies.txt` in Netscape format:
+
 ```
 # Netscape HTTP Cookie File
-.udemy.com	TRUE	/	TRUE	1234567890	access_token	your_token_here
-.udemy.com	TRUE	/	FALSE	1234567890	client_id	your_client_id_here
+.udemy.com  TRUE  /  TRUE  1234567890  access_token  your_token_here
+.udemy.com  TRUE  /  FALSE  1234567890  client_id  your_client_id_here
 ```
 
 ### Verifying Authentication
 
 Test your cookies with a simple download:
+
 ```bash
 python main.py --url "https://www.udemy.com/course/free-course/" --tree
 ```
@@ -524,6 +558,7 @@ LOG_FILE=download.log           # Log file path
 ### Platform-Specific Configuration
 
 #### Windows
+
 ```env
 N_M3U8DL_RE_PATH=n_m3u8dl-re.exe
 SHAKA_PACKAGER_PATH=shaka-packager.exe
@@ -531,6 +566,7 @@ OUTPUT_DIR=C:\Downloads\Courses
 ```
 
 #### macOS/Linux
+
 ```env
 N_M3U8DL_RE_PATH=./n_m3u8dl-re
 SHAKA_PACKAGER_PATH=./shaka-packager
@@ -556,6 +592,7 @@ python get_course.py "https://www.udemy.com/course/python-bootcamp/"
 ```
 
 #### Output Example
+
 ```
 ============================================================
 🎯 UDEMY COURSE ID EXTRACTOR
@@ -577,17 +614,20 @@ python get_course.py "https://www.udemy.com/course/python-bootcamp/"
 ### Workflow Integration
 
 #### 1. Set Default Course in .env
+
 ```env
 COURSE_LINK=https://www.udemy.com/course/your-main-course/
 ```
 
 #### 2. Quick ID Extraction
+
 ```bash
 python get_course.py
 # Outputs: Course ID: 1234567
 ```
 
 #### 3. Use in Downloads
+
 ```bash
 python main.py --id 1234567
 ```
@@ -597,18 +637,21 @@ python main.py --id 1234567
 The extractor handles various URL formats:
 
 #### Course Homepage URLs
+
 ```
 ✅ https://www.udemy.com/course/course-name/
 ✅ https://www.udemy.com/course/course-name/learn/
 ```
 
 #### Lecture URLs (automatically converted)
+
 ```
 ✅ https://www.udemy.com/course/course-name/learn/lecture/12345#overview
    → Extracts course URL and gets course ID
 ```
 
 #### URL with Parameters
+
 ```
 ✅ https://www.udemy.com/course/course-name/?couponCode=ABC123
    → Cleans URL and extracts course ID
@@ -617,9 +660,11 @@ The extractor handles various URL formats:
 ### Manual Course ID Extraction Methods
 
 #### Method 1: Browser Developer Tools
+
 1. Open course page in browser
 2. Press `F12` → Console tab
 3. Run JavaScript:
+
 ```javascript
 // Look for course ID in page data
 console.log("Course ID:", window.ud?.course_id || "Not found");
@@ -627,18 +672,20 @@ console.log("Course ID:", window.ud?.course_id || "Not found");
 // Extract from meta tags
 const metaImage = document.querySelector('meta[property="og:image"]');
 if (metaImage) {
-    const match = metaImage.content.match(/\/(\d+)_/);
-    console.log("Course ID from meta:", match ? match[1] : "Not found");
+  const match = metaImage.content.match(/\/(\d+)_/);
+  console.log("Course ID from meta:", match ? match[1] : "Not found");
 }
 ```
 
 #### Method 2: Network Tab Inspection
+
 1. Open Developer Tools (F12)
 2. Go to Network tab
 3. Refresh course page
 4. Look for API calls containing `course_id=123456`
 
 #### Method 3: Page Source Search
+
 1. Right-click on course page → "View Page Source"
 2. Search for `"course_id":` or `data-course-id=`
 3. Extract the numeric ID
@@ -646,13 +693,15 @@ if (metaImage) {
 ### Course ID vs Other IDs
 
 #### ✅ Valid Course IDs
+
 - **Format**: 6-8 digits (e.g., `1234567`, `12345678`)
 - **Found in**: Course URLs, API responses, meta tags
 - **Use with**: `--id` parameter
 
 #### ❌ NOT Course IDs
+
 - **Lecture IDs**: Found in `/learn/lecture/12345678` URLs
-- **Quiz IDs**: Found in `/learn/quiz/12345678` URLs  
+- **Quiz IDs**: Found in `/learn/quiz/12345678` URLs
 - **User IDs**: Found in profile URLs
 - **Section IDs**: Found in curriculum structure
 
@@ -682,6 +731,7 @@ python main.py --id 1234567 --concurrent 6 --captions "en,es" --srt
 ```
 
 **Expected Output**:
+
 ```
 courses/
 └── Python Bootcamp/
@@ -757,6 +807,7 @@ python main.py --id 1234567 --tree
 ### Understanding DRM Protection
 
 DRM (Digital Rights Management) videos require special decryption keys. These videos:
+
 - Display a warning: "The video appears to be DRM-protected"
 - Cannot be downloaded without a valid Widevine key
 - Are typically premium/paid course content
@@ -764,27 +815,32 @@ DRM (Digital Rights Management) videos require special decryption keys. These vi
 ### Obtaining Widevine Keys
 
 #### Method 1: Browser Extension
+
 1. Install a Widevine key extraction extension
 2. Play the DRM-protected video in browser
 3. Extract the key in format: `key_id:key_value`
 
 #### Method 2: yt-dlp
+
 ```bash
 yt-dlp --allow-unplayable-formats --dump-json "video_url" | grep "widevine"
 ```
 
 #### Method 3: Manual Extraction
+
 Use browser developer tools to intercept network requests and extract keys from license responses.
 
 ### Using Widevine Keys
 
 #### Method A: Environment Variable
+
 ```env
 # In .env file
 WIDEVINE_KEY=1234567890abcdef:fedcba0987654321
 ```
 
 #### Method B: Command Line
+
 ```bash
 python main.py --url "https://www.udemy.com/course/drm-course/" --key "1234567890abcdef:fedcba0987654321"
 ```
@@ -800,24 +856,31 @@ python main.py --url "https://www.udemy.com/course/drm-course/" --key "123456789
 ### DRM Troubleshooting
 
 #### Invalid Key Format
+
 ```
 Error: "The provided Widevine key is either malformed or incorrect"
 ```
+
 **Solution**: Ensure format is `key_id:key_value` with colon separator
 
 #### Shaka Packager Not Found
+
 ```
 Error: "shaka-packager.exe is not installed or not found"
 ```
+
 **Solutions**:
+
 1. Download Shaka Packager and place in project folder
 2. Add Shaka Packager to system PATH
 3. Update `SHAKA_PACKAGER_PATH` in `.env`
 
 #### Expired Keys
+
 ```
 Error: DRM videos download but contain no content
 ```
+
 **Solution**: Keys may expire; extract fresh keys from current session
 
 ---
@@ -827,12 +890,14 @@ Error: DRM videos download but contain no content
 ### Concurrent Download Optimization
 
 #### Understanding Concurrency
+
 - **Low (1-2)**: Stable, slower downloads
 - **Medium (4-6)**: Balanced speed and stability
 - **High (8-15)**: Maximum speed, may cause timeouts
 - **Very High (16-25)**: Risk of IP blocking
 
 #### Optimal Settings by Connection
+
 ```bash
 # DSL/Cable (10-50 Mbps)
 python main.py --concurrent 4
@@ -847,6 +912,7 @@ python main.py --concurrent 12
 ### Subtitle Management
 
 #### Multiple Languages
+
 ```bash
 # Download multiple subtitle languages
 python main.py --id 1234567 --captions "en,es,fr,de,ja"
@@ -856,6 +922,7 @@ python main.py --id 1234567 --captions "en,es" --srt
 ```
 
 #### Subtitle-Only Downloads
+
 ```bash
 # Download only subtitles (no videos)
 python main.py --id 1234567 --skip-lectures --skip-articles --skip-assignments --captions "en,es,fr"
@@ -864,6 +931,7 @@ python main.py --id 1234567 --skip-lectures --skip-articles --skip-assignments -
 ### Quality Selection
 
 #### Manual Quality Override
+
 ```bash
 # Force specific quality (when available)
 python main.py --id 1234567 --quality 720
@@ -875,6 +943,7 @@ python main.py --id 1234567 --quality best
 ### Batch Processing
 
 #### Multiple Courses
+
 Create a batch script:
 
 ```bash
@@ -895,6 +964,7 @@ done
 ```
 
 #### Scheduled Downloads
+
 ```bash
 # Using cron (Linux/macOS)
 # Download at 2 AM daily
@@ -924,18 +994,18 @@ flowchart TD
     E --> G[Show Progress Summary]
     F --> G
     G --> H[Start Download Process]
-    
+
     H --> I[For Each Lecture]
     I --> J[Generate Unique Key]
     J --> K{Already Completed?}
     K -->|Yes| L[Skip Download]
     K -->|No| M[Mark as Started]
-    
+
     M --> N[Download Lecture]
     N --> O{Download Success?}
     O -->|Yes| P[Mark as Completed]
     O -->|No| Q[Mark as Failed]
-    
+
     P --> R[Update Cache File]
     Q --> S[Store Error Info]
     S --> R
@@ -943,7 +1013,7 @@ flowchart TD
     R --> T{More Lectures?}
     T -->|Yes| I
     T -->|No| U[Download Complete]
-    
+
     V[Cache Management] --> W[View Progress]
     V --> X[Clear Cache]
     V --> Y[Reset Failed Downloads]
@@ -952,16 +1022,19 @@ flowchart TD
 ### Key Features
 
 #### 🧠 **Intelligent Resume**
+
 - **Automatic Recovery**: Picks up exactly where downloads were interrupted
 - **File Verification**: Checks file existence and integrity before skipping
 - **Smart Detection**: Identifies completed downloads even if cache is corrupted
 
 #### 🔄 **Failure Handling**
+
 - **Error Tracking**: Records detailed error information for each failed download
 - **Retry Management**: Tracks attempt counts and prevents infinite loops
 - **Selective Recovery**: Only retries actual failures, not completed downloads
 
 #### 📊 **Progress Tracking**
+
 - **Real-time Status**: Shows completed, failed, and remaining downloads
 - **Detailed Analytics**: Progress percentages and completion estimates
 - **Error Reporting**: Comprehensive failure analysis and diagnostics
@@ -1170,16 +1243,19 @@ python main.py --id 1234567 --concurrent 2
 ### Cache Performance Benefits
 
 #### Time Savings
+
 - **No Re-downloads**: Skip completed content automatically
 - **Selective Retry**: Only retry actual failures
 - **Instant Resume**: Continue immediately from interruption point
 
 #### Bandwidth Efficiency
+
 - **Smart Skipping**: Avoids re-downloading working files
 - **Failure Analysis**: Identifies network vs. content issues
 - **Optimized Retry**: Only retries when necessary
 
 #### Reliability
+
 - **Corruption Protection**: Verifies file integrity
 - **State Persistence**: Survives system crashes and restarts
 - **Error Intelligence**: Learns from failures to improve success rates
@@ -1193,12 +1269,16 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
 ### Authentication Issues
 
 #### Problem: "Cookie file could not be read"
+
 **Symptoms**:
+
 - Error on startup
 - "incorrectly formatted" message
 
 **Solutions**:
+
 1. **Check Cookie Format**:
+
    ```bash
    # Verify JSON format
    python -m json.tool cookies.json
@@ -1210,20 +1290,24 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
    - Ensure all required cookies are included
 
 3. **Check File Permissions**:
+
    ```bash
    # Linux/macOS
    chmod 644 cookies.json
-   
+
    # Windows
    # Right-click → Properties → Security
    ```
 
 #### Problem: "You do not have permission to perform this action"
+
 **Symptoms**:
+
 - Can access course page but cannot download
 - Permission denied errors
 
 **Solutions**:
+
 1. **Verify Course Enrollment**:
    - Ensure you're enrolled in the course
    - Check if course requires purchase
@@ -1239,17 +1323,22 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
 ### Download Failures
 
 #### Problem: "Error Downloading Segments"
+
 **Symptoms**:
+
 - Downloads start but fail partway through
 - Timeout errors
 
 **Solutions**:
+
 1. **Reduce Concurrency**:
+
    ```bash
    python main.py --concurrent 2
    ```
 
 2. **Check Internet Connection**:
+
    ```bash
    # Test connection stability
    ping -c 10 www.udemy.com
@@ -1260,12 +1349,16 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
    - Restart download if necessary
 
 #### Problem: "FFmpeg not found"
+
 **Symptoms**:
+
 - Video/audio merging fails
 - "not found in system PATH" error
 
 **Solutions**:
+
 1. **Install FFmpeg**:
+
    ```bash
    # Verify installation
    ffmpeg -version
@@ -1276,20 +1369,25 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
    - Linux/macOS: Install via package manager
 
 3. **Manual Path**:
+
    ```env
    # In .env file
-   FFMPEG_PATH=/path/to/ffmpeg
+   FFMPEG_PATH=P:\E\Junctions\chocolatey\bin\ffmpeg.exe
    ```
 
 ### DRM-Specific Issues
 
 #### Problem: "Missing Video and Audio files"
+
 **Symptoms**:
+
 - DRM videos create empty folders
 - No playable content downloaded
 
 **Solutions**:
+
 1. **Verify Widevine Key**:
+
    ```bash
    # Check key format
    echo $WIDEVINE_KEY
@@ -1297,6 +1395,7 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
    ```
 
 2. **Check Shaka Packager**:
+
    ```bash
    # Test Shaka Packager
    ./shaka-packager --version
@@ -1307,12 +1406,16 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
    - Extract new key from current session
 
 #### Problem: Files Download but Won't Play
+
 **Symptoms**:
+
 - Video files are created with size
 - No audio/video content when opened
 
 **Solutions**:
+
 1. **Check File Integrity**:
+
    ```bash
    # Analyze video file
    ffprobe video.mp4
@@ -1329,16 +1432,20 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
 ### Performance Issues
 
 #### Problem: Slow Download Speeds
+
 **Symptoms**:
+
 - Downloads much slower than expected
 - Frequent timeouts
 
 **Solutions**:
+
 1. **Network Optimization**:
+
    ```bash
    # Test bandwidth
    speedtest-cli
-   
+
    # Optimal concurrent downloads
    python main.py --concurrent 4
    ```
@@ -1354,21 +1461,26 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
    - Download during off-peak hours
 
 #### Problem: High CPU/Memory Usage
+
 **Symptoms**:
+
 - System becomes unresponsive
 - High resource consumption
 
 **Solutions**:
+
 1. **Reduce Concurrency**:
+
    ```bash
    python main.py --concurrent 2
    ```
 
 2. **Process Priority**:
+
    ```bash
    # Linux/macOS (lower priority)
    nice -n 10 python main.py
-   
+
    # Windows (Task Manager → Set Priority → Below Normal)
    ```
 
@@ -1383,11 +1495,13 @@ The cache system makes the Udemy Downloader By Joe highly resilient and user-fri
 ### Hardware Recommendations
 
 #### CPU Optimization
+
 - **Dual-core**: Limit to 2 concurrent downloads
 - **Quad-core**: Optimal at 4-6 concurrent downloads
 - **8+ cores**: Can handle 8-12 concurrent downloads
 
 #### Memory Management
+
 ```bash
 # Monitor memory usage
 # Linux/macOS
@@ -1398,11 +1512,13 @@ htop
 ```
 
 **Memory Guidelines**:
+
 - **4GB RAM**: Max 2-3 concurrent downloads
 - **8GB RAM**: Optimal at 4-6 concurrent downloads
 - **16GB+ RAM**: Can handle 8+ concurrent downloads
 
 #### Storage Considerations
+
 - **HDD**: May bottleneck with high concurrency
 - **SSD**: Recommended for optimal performance
 - **Network Storage**: May introduce latency
@@ -1410,16 +1526,19 @@ htop
 ### Network Optimization
 
 #### Bandwidth Calculation
+
 ```
 Recommended Concurrent Downloads = (Available Bandwidth / 5 Mbps)
 ```
 
 Examples:
+
 - 25 Mbps connection: 5 concurrent downloads
 - 50 Mbps connection: 10 concurrent downloads
 - 100 Mbps connection: 15-20 concurrent downloads
 
 #### Connection Settings
+
 ```env
 # Optimize for your connection
 TIMEOUT=60                    # Increase for slow connections
@@ -1430,6 +1549,7 @@ CONCURRENT_DOWNLOADS=4       # Balance speed and stability
 ### Download Strategy Optimization
 
 #### Large Courses (100+ lectures)
+
 ```bash
 # Approach 1: Chapter-by-chapter
 for i in {1..20}; do
@@ -1442,12 +1562,14 @@ python main.py --id 1234567 --chapter "6-10" --concurrent 4
 ```
 
 #### Premium Courses (DRM)
+
 ```bash
 # Lower concurrency for DRM stability
 python main.py --id 1234567 --concurrent 2 --key "your_key"
 ```
 
 #### Multiple Courses
+
 ```bash
 # Sequential download (recommended)
 python main.py --id 1234567 --concurrent 6
@@ -1462,14 +1584,17 @@ python main.py --id 2345678 --concurrent 6
 ### Security Considerations
 
 #### Cookie Management
+
 1. **Regular Updates**: Re-export cookies weekly
 2. **Secure Storage**: Store cookies.json securely
 3. **Access Control**: Limit file permissions
+
    ```bash
    chmod 600 cookies.json  # Owner read/write only
    ```
 
 #### Key Management
+
 1. **Temporary Storage**: Don't commit keys to version control
 2. **Environment Variables**: Use .env for sensitive data
 3. **Key Rotation**: Re-extract keys for each session
@@ -1477,12 +1602,14 @@ python main.py --id 2345678 --concurrent 6
 ### Ethical Usage
 
 #### Compliance Guidelines
+
 1. **Terms of Service**: Respect Udemy's ToS
 2. **Personal Use**: Download only for personal learning
 3. **No Redistribution**: Don't share downloaded content
 4. **Course Enrollment**: Only download enrolled courses
 
 #### Rate Limiting
+
 ```bash
 # Respectful download practices
 python main.py --concurrent 2-4  # Moderate concurrency
@@ -1492,6 +1619,7 @@ sleep 5  # Delays between courses
 ### Maintenance
 
 #### Regular Updates
+
 ```bash
 # Update Python dependencies
 pip install --upgrade -r requirements.txt
@@ -1502,6 +1630,7 @@ pip install --upgrade -r requirements.txt
 ```
 
 #### Cleanup Procedures
+
 ```bash
 # Clean temporary files
 rm -rf temp/
@@ -1514,6 +1643,7 @@ tar -czf old_courses_$(date +%Y%m%d).tar.gz courses/
 ### Backup Strategies
 
 #### Course Backup
+
 ```bash
 # Create course archive
 tar -czf course_backup_$(date +%Y%m%d).tar.gz courses/
@@ -1523,6 +1653,7 @@ tar -tzf course_backup_$(date +%Y%m%d).tar.gz
 ```
 
 #### Configuration Backup
+
 ```bash
 # Backup configuration
 cp .env .env.backup
@@ -1532,6 +1663,7 @@ cp cookies.json cookies.json.backup
 ### Monitoring and Logging
 
 #### Enable Detailed Logging
+
 ```env
 # In .env file
 LOG_LEVEL=DEBUG
@@ -1539,6 +1671,7 @@ LOG_FILE=downloads.log
 ```
 
 #### Monitor Downloads
+
 ```bash
 # Real-time log monitoring
 tail -f downloads.log
@@ -1562,4 +1695,4 @@ Remember to use this tool responsibly and in compliance with Udemy's Terms of Se
 
 ---
 
-**Happy Learning!** 📚 
+**Happy Learning!** 📚
