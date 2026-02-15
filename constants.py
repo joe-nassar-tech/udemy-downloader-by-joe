@@ -4,12 +4,14 @@ import time
 import logging
 import argparse
 from itertools import cycle
-from shutil import get_terminal_size
 from threading import Thread
 from rich.progress import TextColumn
+from rich.text import Text
 
 import sys
-sys.stdout.reconfigure(encoding='utf-8')
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore
 
 COURSE_URL = "https://udemy.com/api-2.0/courses/{course_id}/"
 CURRICULUM_URL = "https://udemy.com/api-2.0/courses/{course_id}/subscriber-curriculum-items/?page_size=200&fields[lecture]=title,object_index,is_published,sort_order,created,asset,supplementary_assets,is_free&fields[quiz]=title,object_index,is_published,sort_order,type&fields[practice]=title,object_index,is_published,sort_order&fields[chapter]=title,object_index,is_published,sort_order&fields[asset]=title,filename,asset_type,status,time_estimation,is_external&caching_intent=True"
@@ -28,26 +30,28 @@ LOG_DIR = os.path.join(HOME_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
 LOG_FILE_PATH = os.path.join(LOG_DIR, f"{time.strftime('%Y-%m-%d')}.log")
 
+
 class LogFormatter(logging.Formatter):
     RESET = "\x1b[0m"
     COLOR_CODES = {
-        'INFO': "\x1b[32m",    # Green
-        'WARNING': "\x1b[33m", # Yellow
-        'ERROR': "\x1b[31m",   # Red
-        'CRITICAL': "\x1b[41m" # Red background
+        'INFO': "\x1b[32m",  # Green
+        'WARNING': "\x1b[33m",  # Yellow
+        'ERROR': "\x1b[31m",  # Red
+        'CRITICAL': "\x1b[41m"  # Red background
     }
 
     def format(self, record):
         original_levelname = record.levelname
-        
+
         log_color = self.COLOR_CODES.get(record.levelname, self.RESET)
         record.levelname = f"{log_color}{record.levelname}{self.RESET}"
-        
+
         formatted_message = super().format(record)
-        
+
         record.levelname = original_levelname
-        
+
         return formatted_message
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -60,13 +64,16 @@ file_handler = logging.FileHandler(LOG_FILE_PATH)
 file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s : %(message)s'))
 logger.addHandler(file_handler)
 
+
 class LoadAction(argparse.Action):
+
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, values if values is not None else True)
 
 
 # Source: https://stackoverflow.com/questions/22029562/python-how-to-make-simple-animated-loading-while-process-is-running
 class Loader:
+
     def __init__(self, desc="Processing", timeout=0.1):
         self.desc = desc
         self.timeout = timeout
@@ -100,19 +107,22 @@ class Loader:
     def __exit__(self, exc_type, exc_value, tb):
         self.stop()
 
+
 class ElapsedTimeColumn(TextColumn):
+
     def __init__(self, *args, **kwargs):
         super().__init__("{elapsed_time}", *args, **kwargs)
         self.start_time = time.time()
 
     def render(self, task):
-        if task.completed==100:
-            return "[green]Completed[/green]"
+        if task.completed == 100:
+            return Text("Completed", style="green")
 
         elapsed = time.time() - self.start_time
-        formatted_time = f"[yellow]{elapsed:.2f}s[/yellow]"
-        return formatted_time
-    
+        formatted_time = f"{elapsed:.2f}s"
+        return Text(formatted_time, style="yellow")
+
+
 def remove_emojis_and_binary(text):
     emoji_pattern = re.compile(
         "["
@@ -127,7 +137,7 @@ def remove_emojis_and_binary(text):
         "\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
         "\U00002702-\U000027B0"  # Dingbats
         "\U000024C2-\U0001F251"  # Enclosed Characters
-        "]+", 
+        "]+",
         flags=re.UNICODE
     )
 
@@ -136,15 +146,16 @@ def remove_emojis_and_binary(text):
     # Remove Arabic text and keep only safe filename characters
     # Keep alphanumeric, spaces, hyphens, underscores, parentheses, and dots
     text = re.sub(r'[^\w\s\-_().\[\]]+', '', text, flags=re.UNICODE)
-    
+
     # Clean up multiple spaces and trim
     text = re.sub(r'\s+', ' ', text).strip()
-    
+
     # If the text is empty or too short after cleaning, use a fallback name
     if len(text.strip()) < 3:
         text = "Course_Content"
 
     return text
+
 
 def timestamp_to_seconds(timestamp):
     hours, minutes, seconds = timestamp.split(':')
@@ -152,10 +163,12 @@ def timestamp_to_seconds(timestamp):
     total_seconds = int(hours) * 3600 + int(minutes) * 60 + int(seconds) + int(fraction) / 100
     return total_seconds
 
+
 def format_time(seconds):
     hours, remainder = divmod(seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     return f"{hours}hr {minutes}min {seconds}s" if hours > 0 else f"{minutes}min {seconds}s"
+
 
 def is_valid_chapter(mindex, start_chapter, end_chapter, chapter_filter=None):
     """
@@ -164,6 +177,7 @@ def is_valid_chapter(mindex, start_chapter, end_chapter, chapter_filter=None):
     range_valid = start_chapter <= mindex <= end_chapter
     filter_valid = chapter_filter is None or mindex in chapter_filter
     return range_valid and filter_valid
+
 
 def is_valid_lecture(mindex, lindex, start_chapter, start_lecture, end_chapter, end_lecture):
     if mindex == start_chapter and lindex < start_lecture:

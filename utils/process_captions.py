@@ -2,6 +2,7 @@ import os
 import requests
 import webvtt
 
+
 def download_captions(captions, download_folder_path, title_of_output_mp4, captions_list, convert_to_srt):
     filtered_captions = [caption for caption in captions if caption["locale_id"] in captions_list]
 
@@ -19,9 +20,9 @@ def download_captions(captions, download_folder_path, title_of_output_mp4, capti
                 srt_path = os.path.join(download_folder_path, srt_name)
                 srt_content = webvtt.read(vtt_path)
                 srt_content.save_as_srt(srt_path)
-              
+
                 # Remove VTT file
                 os.remove(vtt_path)
-                
+
         else:
             print("Only VTT captions are supported. Please create a github issue if you'd like to add support for other formats.")

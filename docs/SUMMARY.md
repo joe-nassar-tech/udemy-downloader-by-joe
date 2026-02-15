@@ -94,4 +94,4 @@ The tool requires several supporting software components including video process
 
 Udemy Downloader By Joe provides a comprehensive solution for offline access to educational content, combining powerful downloading capabilities with respect for legal and ethical boundaries. It serves as a valuable tool for learners, educators, and researchers who need flexible access to online course materials while maintaining compliance with copyright and usage policies.
 
-The tool represents a balance between technological capability and responsible use, designed to enhance educational opportunities while respecting the rights of content creators and platform providers. 
+The tool represents a balance between technological capability and responsible use, designed to enhance educational opportunities while respecting the rights of content creators and platform providers.

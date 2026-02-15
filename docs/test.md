@@ -21,6 +21,7 @@ This comprehensive testing guide will walk you through testing every feature of 
 ## Prerequisites Testing
 
 ### Test 1.1: Python Installation
+
 **Objective**: Verify Python 3.8+ is properly installed
 
 ```bash
@@ -38,11 +39,13 @@ pip install --dry-run requests
 ```
 
 **Expected Results**:
+
 - ✅ Python version 3.8 or higher
 - ✅ pip working correctly
 - ✅ No permission or path issues
 
 ### Test 1.2: Dependencies Installation
+
 **Objective**: Verify all Python dependencies install correctly
 
 ```bash
@@ -57,11 +60,13 @@ python -c "from dotenv import load_dotenv; print('python-dotenv: OK')"
 ```
 
 **Expected Results**:
+
 - ✅ All packages install without errors
 - ✅ Import statements work correctly
 - ✅ Version numbers display properly
 
 ### Test 1.3: External Tools Testing
+
 **Objective**: Verify FFmpeg and downloader tools are working
 
 ```bash
@@ -83,6 +88,7 @@ shaka-packager.exe --version
 ```
 
 **Expected Results**:
+
 - ✅ FFmpeg shows version and build info
 - ✅ N_m3u8DL-RE responds with version
 - ✅ Shaka Packager available (for DRM testing)
@@ -92,21 +98,23 @@ shaka-packager.exe --version
 ## Authentication Testing
 
 ### Test 2.1: Cookie File Validation
+
 **Objective**: Test different cookie formats and validation
 
 #### JSON Format Testing
+
 ```bash
 # Create test cookies.json
 cat > test_cookies.json << EOF
 [
   {
-    "name": "access_token", 
+    "name": "access_token",
     "value": "test_token_value",
     "domain": ".udemy.com"
   },
   {
     "name": "client_id",
-    "value": "test_client_id", 
+    "value": "test_client_id",
     "domain": ".udemy.com"
   }
 ]
@@ -117,16 +125,18 @@ python -c "import json; print(json.load(open('test_cookies.json')))"
 ```
 
 **Expected Results**:
+
 - ✅ Valid JSON format loads without errors
 - ✅ Required cookie fields present
 
-#### Netscape Format Testing  
+#### Netscape Format Testing
+
 ```bash
 # Create test cookies.txt (Netscape format)
 cat > test_cookies.txt << EOF
 # Netscape HTTP Cookie File
-.udemy.com	TRUE	/	FALSE	0	access_token	test_token_value
-.udemy.com	TRUE	/	FALSE	0	client_id	test_client_id
+.udemy.com TRUE / FALSE 0 access_token test_token_value
+.udemy.com TRUE / FALSE 0 client_id test_client_id
 EOF
 
 # Test file format
@@ -135,11 +145,13 @@ head -n 3 test_cookies.txt
 ```
 
 **Expected Results**:
+
 - ✅ Proper Netscape format structure
 - ✅ Tab-separated values
 - ✅ Required domains and cookie names
 
 ### Test 2.2: Authentication Flow
+
 **Objective**: Test authentication with real cookies
 
 ```bash
@@ -151,6 +163,7 @@ python get_course.py "https://www.udemy.com/course/any-free-course/"
 ```
 
 **Expected Results**:
+
 - ✅ No authentication errors
 - ✅ Course ID extracted successfully
 - ✅ No "permission denied" messages
@@ -160,6 +173,7 @@ python get_course.py "https://www.udemy.com/course/any-free-course/"
 ## Basic Functionality Testing
 
 ### Test 3.1: Help and Version Information
+
 **Objective**: Test basic command line interface
 
 ```bash
@@ -170,16 +184,18 @@ python main.py --help
 # Test course extractor help
 python get_course.py --help
 
-# Test cache manager help  
+# Test cache manager help
 python cache_manager.py --help
 ```
 
 **Expected Results**:
+
 - ✅ Help text displays correctly
 - ✅ All command line options shown
 - ✅ No Python import errors
 
 ### Test 3.2: Environment Configuration
+
 **Objective**: Test .env file loading and configuration
 
 ```bash
@@ -203,11 +219,13 @@ print('CONCURRENT_DOWNLOADS:', os.getenv('CONCURRENT_DOWNLOADS'))
 ```
 
 **Expected Results**:
+
 - ✅ Environment variables load correctly
 - ✅ All expected values present
 - ✅ No syntax errors in .env file
 
 ### Test 3.3: Directory Creation
+
 **Objective**: Test automatic directory creation
 
 ```bash
@@ -220,7 +238,7 @@ from pathlib import Path
 Path('test_cache').mkdir(exist_ok=True)
 print('Cache dir created:', os.path.exists('test_cache'))
 
-# Test output directory  
+# Test output directory
 Path('test_output').mkdir(exist_ok=True)
 print('Output dir created:', os.path.exists('test_output'))
 
@@ -231,6 +249,7 @@ os.rmdir('test_output')
 ```
 
 **Expected Results**:
+
 - ✅ Directories created successfully
 - ✅ No permission errors
 - ✅ Cleanup works properly
@@ -240,6 +259,7 @@ os.rmdir('test_output')
 ## Cache System Testing
 
 ### Test 4.1: Cache Creation and Loading
+
 **Objective**: Test cache system initialization
 
 ```bash
@@ -260,11 +280,13 @@ cat test_cache/course_test_course_123.json
 ```
 
 **Expected Results**:
+
 - ✅ Cache file created in correct location
 - ✅ JSON structure is valid
 - ✅ Required fields present (course_id, created_at, downloads, etc.)
 
-### Test 4.2: Download Progress Tracking  
+### Test 4.2: Download Progress Tracking
+
 **Objective**: Test download state management
 
 ```bash
@@ -292,11 +314,13 @@ print('Summary:', summary)
 ```
 
 **Expected Results**:
+
 - ✅ Downloads tracked with unique keys
 - ✅ States update correctly (started → completed/failed)
 - ✅ Summary shows accurate counts
 
 ### Test 4.3: Cache Persistence
+
 **Objective**: Test cache survives application restarts
 
 ```bash
@@ -320,11 +344,13 @@ print('Should show 1 completed download')
 ```
 
 **Expected Results**:
+
 - ✅ Cache data persists between instances
 - ✅ Download states maintained correctly
 - ✅ No data corruption
 
 ### Test 4.4: Cache Manager Utility
+
 **Objective**: Test cache management tools
 
 ```bash
@@ -350,6 +376,7 @@ python cache_manager.py --clear course_1002
 ```
 
 **Expected Results**:
+
 - ✅ List shows all test caches
 - ✅ Show displays detailed information
 - ✅ Reset-failed changes failed status to pending
@@ -360,6 +387,7 @@ python cache_manager.py --clear course_1002
 ## Course ID Extraction Testing
 
 ### Test 5.1: URL Parsing
+
 **Objective**: Test course ID extraction from various URL formats
 
 ```bash
@@ -374,11 +402,13 @@ python get_course.py "https://www.udemy.com/course/complete-python-bootcamp/"
 ```
 
 **Expected Results**:
+
 - ✅ Course IDs extracted correctly from all formats
-- ✅ URL parameters ignored properly  
+- ✅ URL parameters ignored properly
 - ✅ No crashes on malformed URLs
 
 ### Test 5.2: Environment Variable Loading
+
 **Objective**: Test default course URL from .env
 
 ```bash
@@ -390,10 +420,12 @@ python get_course.py
 ```
 
 **Expected Results**:
+
 - ✅ Default course loaded from environment
 - ✅ Course ID extracted from default URL
 
 ### Test 5.3: Error Handling
+
 **Objective**: Test extraction with invalid URLs
 
 ```bash
@@ -404,6 +436,7 @@ python get_course.py "https://www.udemy.com/invalid-page/"
 ```
 
 **Expected Results**:
+
 - ✅ Graceful error messages
 - ✅ No application crashes
 - ✅ Clear instructions for user
@@ -413,6 +446,7 @@ python get_course.py "https://www.udemy.com/invalid-page/"
 ## Download Features Testing
 
 ### Test 6.1: Basic Download Flow
+
 **Objective**: Test complete download process with free course
 
 > **Note**: Use only free courses or courses you own for testing
@@ -423,13 +457,14 @@ python main.py --id FREE_COURSE_ID --concurrent 1 --skip-lectures --skip-caption
 
 # This will test:
 # - Authentication
-# - Course curriculum retrieval  
+# - Course curriculum retrieval
 # - Cache initialization
 # - Directory creation
 # - Asset downloading (without videos)
 ```
 
 **Expected Results**:
+
 - ✅ Authentication successful
 - ✅ Course information retrieved
 - ✅ Folder structure created
@@ -437,6 +472,7 @@ python main.py --id FREE_COURSE_ID --concurrent 1 --skip-lectures --skip-caption
 - ✅ Cache tracking working
 
 ### Test 6.2: Selective Download Testing
+
 **Objective**: Test chapter and lecture selection
 
 ```bash
@@ -451,18 +487,20 @@ python main.py --id COURSE_ID --chapter "1,3,5" --skip-lectures
 ```
 
 **Expected Results**:
+
 - ✅ Only specified chapters processed
 - ✅ Lecture ranges respected
 - ✅ Chapter filter works correctly
 
 ### Test 6.3: Content Type Selection
+
 **Objective**: Test skipping different content types
 
 ```bash
 # Test skipping videos
 python main.py --id COURSE_ID --skip-lectures --concurrent 1
 
-# Test skipping captions  
+# Test skipping captions
 python main.py --id COURSE_ID --skip-captions --skip-lectures
 
 # Test skipping articles
@@ -473,11 +511,13 @@ python main.py --id COURSE_ID --skip-assets --skip-lectures
 ```
 
 **Expected Results**:
+
 - ✅ Specified content types skipped
 - ✅ Other content types processed normally
 - ✅ Proper progress tracking
 
 ### Test 6.4: Subtitle Testing
+
 **Objective**: Test subtitle download and conversion
 
 ```bash
@@ -492,6 +532,7 @@ python main.py --id COURSE_ID --skip-lectures --skip-articles --skip-assets
 ```
 
 **Expected Results**:
+
 - ✅ Multiple subtitle languages downloaded
 - ✅ SRT conversion works correctly
 - ✅ Subtitle files in proper locations
@@ -501,12 +542,13 @@ python main.py --id COURSE_ID --skip-lectures --skip-articles --skip-assets
 ## Advanced Features Testing
 
 ### Test 7.1: Concurrent Download Testing
+
 **Objective**: Test multi-threaded downloading
 
 ```bash
 # Test different concurrency levels
 python main.py --id COURSE_ID --concurrent 1 --skip-lectures
-python main.py --id COURSE_ID --concurrent 4 --skip-lectures  
+python main.py --id COURSE_ID --concurrent 4 --skip-lectures
 python main.py --id COURSE_ID --concurrent 8 --skip-lectures
 
 # Test maximum concurrency (should cap at 25)
@@ -514,12 +556,14 @@ python main.py --id COURSE_ID --concurrent 30 --skip-lectures
 ```
 
 **Expected Results**:
+
 - ✅ Higher concurrency = faster downloads
 - ✅ System handles concurrent requests properly
 - ✅ Concurrency caps at maximum (25)
 - ✅ No deadlocks or hangs
 
 ### Test 7.2: Curriculum Management
+
 **Objective**: Test save/load curriculum features
 
 ```bash
@@ -536,11 +580,13 @@ python main.py --load test_curriculum.json --skip-lectures --concurrent 1
 ```
 
 **Expected Results**:
+
 - ✅ Curriculum saves as valid JSON
 - ✅ Tree file contains course structure
 - ✅ Load works without re-fetching from server
 
 ### Test 7.3: Configuration Override Testing
+
 **Objective**: Test command line overrides of .env settings
 
 ```bash
@@ -552,6 +598,7 @@ python main.py --cookies custom_cookies.json --id COURSE_ID --skip-lectures
 ```
 
 **Expected Results**:
+
 - ✅ Command line options override .env settings
 - ✅ Custom paths work correctly
 - ✅ No configuration conflicts
@@ -563,6 +610,7 @@ python main.py --cookies custom_cookies.json --id COURSE_ID --skip-lectures
 > **Warning**: Only test with courses you legitimately own and have purchased
 
 ### Test 8.1: Widevine Key Validation
+
 **Objective**: Test DRM key format validation
 
 ```bash
@@ -575,11 +623,13 @@ python main.py --key "missing:colon:format" --id DRM_COURSE_ID --skip-lectures
 ```
 
 **Expected Results**:
+
 - ✅ Valid keys accepted
 - ✅ Invalid keys rejected with clear error messages
 - ✅ No application crashes on invalid keys
 
 ### Test 8.2: DRM Download Process
+
 **Objective**: Test DRM-protected content download
 
 ```bash
@@ -594,12 +644,14 @@ python main.py --key "YOUR_VALID_KEY" --id DRM_COURSE_ID --concurrent 1
 ```
 
 **Expected Results**:
+
 - ✅ DRM content detected correctly
-- ✅ Decryption process successful  
+- ✅ Decryption process successful
 - ✅ Playable video files created
 - ✅ No corrupted or empty files
 
 ### Test 8.3: DRM Error Handling
+
 **Objective**: Test DRM-specific error scenarios
 
 ```bash
@@ -615,6 +667,7 @@ python main.py --id DRM_COURSE_ID --concurrent 1
 ```
 
 **Expected Results**:
+
 - ✅ Missing tools detected and reported
 - ✅ Expired keys handled gracefully
 - ✅ Warning shown for DRM without keys
@@ -624,6 +677,7 @@ python main.py --id DRM_COURSE_ID --concurrent 1
 ## Error Handling Testing
 
 ### Test 9.1: Network Error Simulation
+
 **Objective**: Test resilience to network issues
 
 ```bash
@@ -636,11 +690,13 @@ python main.py --id COURSE_ID --concurrent 1
 ```
 
 **Expected Results**:
+
 - ✅ Network errors handled gracefully
 - ✅ Downloads resume after reconnection
 - ✅ Cache tracks failures correctly
 
-### Test 9.2: Interrupted Download Testing  
+### Test 9.2: Interrupted Download Testing
+
 **Objective**: Test recovery from process interruption
 
 ```bash
@@ -653,11 +709,13 @@ python main.py --id COURSE_ID --concurrent 2
 ```
 
 **Expected Results**:
+
 - ✅ Graceful shutdown on interrupt
 - ✅ Cache preserved during interruption
 - ✅ Resume skips completed content
 
 ### Test 9.3: Invalid Course Testing
+
 **Objective**: Test handling of invalid course IDs/URLs
 
 ```bash
@@ -672,6 +730,7 @@ python main.py --cookies invalid_cookies.json --id VALID_COURSE_ID
 ```
 
 **Expected Results**:
+
 - ✅ Clear error messages for non-existent courses
 - ✅ Permission errors handled properly
 - ✅ Authentication failures reported clearly
@@ -681,6 +740,7 @@ python main.py --cookies invalid_cookies.json --id VALID_COURSE_ID
 ## Performance Testing
 
 ### Test 10.1: Memory Usage Testing
+
 **Objective**: Monitor resource consumption
 
 ```bash
@@ -692,16 +752,18 @@ python main.py --id LARGE_COURSE_ID --concurrent 4
 
 # Monitor for:
 # - Memory leaks
-# - CPU usage patterns  
+# - CPU usage patterns
 # - Disk I/O efficiency
 ```
 
 **Expected Results**:
+
 - ✅ Memory usage stable (no continuous growth)
 - ✅ CPU usage reasonable for concurrency level
 - ✅ No excessive disk I/O
 
 ### Test 10.2: Large Course Testing
+
 **Objective**: Test with courses having many lectures
 
 ```bash
@@ -715,11 +777,13 @@ python main.py --id LARGE_COURSE_ID --concurrent 6 --skip-lectures
 ```
 
 **Expected Results**:
+
 - ✅ Cache handles large numbers of lectures
 - ✅ Progress tracking remains accurate
 - ✅ No performance degradation
 
 ### Test 10.3: Stress Testing
+
 **Objective**: Test system limits
 
 ```bash
@@ -734,6 +798,7 @@ wait
 ```
 
 **Expected Results**:
+
 - ✅ High concurrency handled gracefully
 - ✅ Multiple instances don't conflict
 - ✅ System remains responsive
@@ -743,6 +808,7 @@ wait
 ## Integration Testing
 
 ### Test 11.1: End-to-End Testing
+
 **Objective**: Complete workflow testing
 
 ```bash
@@ -756,11 +822,13 @@ python cache_manager.py --show $COURSE_ID
 ```
 
 **Expected Results**:
+
 - ✅ Complete workflow executes without errors
 - ✅ All components work together properly
 - ✅ Data flows correctly between tools
 
 ### Test 11.2: Cross-Platform Testing
+
 **Objective**: Test on different operating systems
 
 ```bash
@@ -768,18 +836,20 @@ python cache_manager.py --show $COURSE_ID
 # Test with Windows paths and executables
 python main.py --id COURSE_ID --concurrent 2
 
-# Linux/macOS-specific tests  
+# Linux/macOS-specific tests
 # Test with Unix paths and permissions
 chmod +x n_m3u8dl-re shaka-packager
 python main.py --id COURSE_ID --concurrent 2
 ```
 
 **Expected Results**:
+
 - ✅ Path handling works on all platforms
 - ✅ Executable permissions set correctly
 - ✅ No platform-specific errors
 
 ### Test 11.3: Data Integrity Testing
+
 **Objective**: Verify downloaded content integrity
 
 ```bash
@@ -795,6 +865,7 @@ python cache_manager.py --show COURSE_ID
 ```
 
 **Expected Results**:
+
 - ✅ Video files are playable and not corrupted
 - ✅ Subtitle files are valid text files
 - ✅ Cache accurately reflects file system state
@@ -814,7 +885,7 @@ Course Used: [COURSE_ID/NAME]
 
 ## Test Results Summary
 - Prerequisites: ✅/❌
-- Authentication: ✅/❌  
+- Authentication: ✅/❌
 - Basic Functionality: ✅/❌
 - Cache System: ✅/❌
 - Course Extraction: ✅/❌
@@ -885,4 +956,4 @@ python get_course.py "https://www.udemy.com/course/test/" > /dev/null || exit 1
 echo "✅ All basic tests passed!"
 ```
 
-This comprehensive testing guide ensures every feature of your Udemy Downloader is thoroughly tested and working correctly! 🎯 
+This comprehensive testing guide ensures every feature of your Udemy Downloader is thoroughly tested and working correctly! 🎯

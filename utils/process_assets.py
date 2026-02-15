@@ -1,6 +1,6 @@
 import os
-from urllib.parse import urlparse
 from constants import LINK_ASSET_URL, FILE_ASSET_URL
+
 
 def download_supplementary_assets(udemy, assets, download_folder_path, course_id, lecture_id):
     for asset in assets:
@@ -13,15 +13,19 @@ def download_supplementary_assets(udemy, assets, download_folder_path, course_id
                 pass
                 # Unsupported asset type. Please create a github issue if you'd like to add support for other types
 
+
 def process_files(udemy, asset, course_id, lecture_id, download_folder_path):
 
     assets_folder = os.path.join(download_folder_path, "assets")
     if not os.path.exists(assets_folder):
         os.makedirs(assets_folder)
-    
+
     asset_file_path = os.path.join(assets_folder, asset['filename'])
 
-    file_response = udemy.request(udemy.request(FILE_ASSET_URL.format(course_id=course_id, lecture_id=lecture_id, asset_id=asset['id'])).json()['download_urls']['File'][0]['file'])
+    file_response = udemy.request(
+        udemy.request(FILE_ASSET_URL.format(course_id=course_id, lecture_id=lecture_id,
+                                            asset_id=asset['id'])).json()['download_urls']['File'][0]['file']
+    )
 
     file_response.raise_for_status()
 
@@ -29,6 +33,7 @@ def process_files(udemy, asset, course_id, lecture_id, download_folder_path):
         for chunk in file_response.iter_content(chunk_size=8192):
             if chunk:
                 file.write(chunk)
+
 
 def process_external_links(udemy, asset, course_id, lecture_id, download_folder_path):
 
