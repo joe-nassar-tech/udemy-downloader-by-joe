@@ -16,7 +16,10 @@ import re
 import http.cookiejar as cookielib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from constants import *
+from constants import (
+    logger, LoadAction, COURSE_URL, CURRICULUM_URL, LECTURE_URL, HOME_DIR, format_time, remove_emojis_and_binary, Loader, is_valid_chapter,
+    is_valid_lecture, ElapsedTimeColumn, time
+)
 from utils.process_m3u8 import download_and_merge_m3u8
 from utils.process_mpd import download_and_merge_mpd
 from utils.process_captions import download_captions
@@ -72,6 +75,7 @@ if (not os.path.exists(COOKIES_PATH)) or os.path.getsize(COOKIES_PATH) == 0:
         print("[ERROR] No cookies found. Please paste your browser-exported cookies in cookies.json.")
         exit(1)
 
+
 def parse_chapter_filter(chapter_str):
     """
     Given a string like "1,3-5,7,9-11", return a set of chapter numbers.
@@ -93,26 +97,34 @@ def parse_chapter_filter(chapter_str):
                 logger.error("Invalid chapter number in --chapter argument: %s", part)
     return chapters
 
+
 class Udemy:
+
     def __init__(self):
         global cookie_jar
         try:
             cookie_jar = cookielib.MozillaCookieJar(COOKIES_PATH)
             cookie_jar.load()
-        except Exception as e:
-            logger.critical(f"The provided cookie file could not be read or is incorrectly formatted. Please ensure the file is in the correct format and contains valid authentication cookies.")
+        except (Exception):
+            logger.critical(
+                "The provided cookie file could not be read or is incorrectly formatted. Please ensure the file is in the correct format and contains valid authentication cookies."
+            )
             sys.exit(1)
-    
+
     def request(self, url):
         try:
             response = requests.get(url, cookies=cookie_jar, stream=True)
+            response.raise_for_status()
             return response
         except Exception as e:
-            logger.critical(f"There was a problem reaching the Udemy server. This could be due to network issues, an invalid URL, or Udemy being temporarily unavailable.")
+            logger.critical(
+                f"There was a problem reaching the Udemy server: {e}. This could be due to network issues, an invalid URL, or Udemy being temporarily unavailable."
+            )
+            sys.exit(1)
 
     def extract_course_id(self, course_url):
 
-        with Loader(f"Fetching course ID"):            
+        with Loader("Fetching course ID"):
             response = self.request(course_url)
             content_str = response.content.decode('utf-8')
 
@@ -131,20 +143,22 @@ class Udemy:
         else:
             logger.critical("Unable to retrieve a valid course ID from the provided course URL. Please check the course URL or try with --id")
             sys.exit(1)
-        
+
     def fetch_course(self, course_id):
         try:
             response = self.request(COURSE_URL.format(course_id=course_id)).json()
-    
+
             if response.get('detail') == 'Not found.':
-                logger.critical("The course could not be found with the provided ID or URL. Please verify the course ID/URL and ensure that it is publicly accessible or you have the necessary permissions.")
+                logger.critical(
+                    "The course could not be found with the provided ID or URL. Please verify the course ID/URL and ensure that it is publicly accessible or you have the necessary permissions."
+                )
                 sys.exit(1)
-            
+
             return response
         except Exception as e:
             logger.critical(f"Unable to retrieve the course details: {e}")
             sys.exit(1)
-    
+
     def fetch_course_curriculum(self, course_id):
         all_results = []
         url = CURRICULUM_URL.format(course_id=course_id)
@@ -165,11 +179,15 @@ class Udemy:
                 response = self.request(url).json()
 
                 if response.get('detail') == 'You do not have permission to perform this action.':
-                    progress.console.log("[red]The course was found, but the curriculum (lectures and materials) could not be retrieved. This could be due to API issues, restrictions on the course, or a malformed course structure.[/red]")
+                    progress.console.log(
+                        "[red]The course was found, but the curriculum (lectures and materials) could not be retrieved. This could be due to API issues, restrictions on the course, or a malformed course structure.[/red]"
+                    )
                     sys.exit(1)
 
                 if response.get('detail') == 'Not found.':
-                    progress.console.log("[red]The course was found, but the curriculum (lectures and materials) could not be retrieved. This could be due to API issues, restrictions on the course, or a malformed course structure.[/red]")
+                    progress.console.log(
+                        "[red]The course was found, but the curriculum (lectures and materials) could not be retrieved. This could be due to API issues, restrictions on the course, or a malformed course structure.[/red]"
+                    )
                     sys.exit(1)
 
                 if total_count == 0:
@@ -182,9 +200,9 @@ class Udemy:
 
                 url = response.get('next')
 
-            progress.update(task_id = task, description="Fetched Course Curriculum", total=total_count)
+            progress.update(task_id=task, description="Fetched Course Curriculum", total=total_count)
         return self.organize_curriculum(all_results)
-    
+
     def organize_curriculum(self, results):
         curriculum = []
         current_chapter = None
@@ -193,12 +211,7 @@ class Udemy:
 
         for item in results:
             if item['_class'] == 'chapter':
-                current_chapter = {
-                    'id': item['id'],
-                    'title': item['title'],
-                    'is_published': item['is_published'],
-                    'children': []
-                }
+                current_chapter = {'id': item['id'], 'title': item['title'], 'is_published': item['is_published'], 'children': []}
                 curriculum.append(current_chapter)
             elif item['_class'] == 'lecture':
                 if current_chapter is not None:
@@ -227,9 +240,9 @@ class Udemy:
                     node_text = Text(title, style="cyan")
                 else:
                     node_text = Text(title, style="magenta")
-                    
+
                 node = tree.add(node_text)
-                
+
                 if 'children' in item:
                     self.build_curriculum_tree(item['children'], node, index=1)
 
@@ -239,7 +252,7 @@ class Udemy:
         except Exception as e:
             logger.critical(f"Failed to fetch lecture info: {e}")
             sys.exit(1)
-    
+
     def create_directory(self, path):
         try:
             os.makedirs(path)
@@ -249,25 +262,23 @@ class Udemy:
             logger.error(f"Failed to create directory \"{path}\": {e}")
             sys.exit(1)
 
-    def download_lecture(self, course_id, lecture, lect_info, temp_folder_path, lindex, folder_path, task_id, progress, download_cache, chapter_index):
+    def download_lecture(
+        self, course_id, lecture, lect_info, temp_folder_path, lindex, folder_path, task_id, progress, download_cache, chapter_index
+    ):
         lecture_title = sanitize_filename(lecture['title'])
         expected_file_path = os.path.join(folder_path, f"{lindex}. {lecture_title}.mp4")
-        
+
         # Check if download is already completed
-        is_completed, cached_record = download_cache.is_download_completed(
-            chapter_index, lindex, lecture_title, expected_file_path
-        )
-        
+        is_completed, cached_record = download_cache.is_download_completed(chapter_index, lindex, lecture_title, expected_file_path)
+
         if is_completed:
             progress.console.log(f"[yellow]⏭️  Skipping {lecture_title} (already downloaded)[/yellow]")
             progress.remove_task(task_id)
             return
-        
+
         # Mark download as started
-        download_key = download_cache.mark_download_started(
-            chapter_index, lindex, lecture_title, lecture['id'], lect_info['asset']['asset_type']
-        )
-        
+        download_key = download_cache.mark_download_started(chapter_index, lindex, lecture_title, lecture['id'], lect_info['asset']['asset_type'])
+
         try:
             if not skip_captions and len(lect_info["asset"]["captions"]) > 0:
                 download_captions(lect_info["asset"]["captions"], folder_path, f"{lindex}. {lecture_title}", captions, convert_to_srt)
@@ -279,11 +290,13 @@ class Udemy:
                 mpd_url = next((item['src'] for item in lect_info['asset']['media_sources'] if item['type'] == "application/dash+xml"), None)
                 mp4_url = next((item['src'] for item in lect_info['asset']['media_sources'] if item['type'] == "video/mp4"), None)
                 m3u8_url = next((item['src'] for item in lect_info['asset']['media_sources'] if item['type'] == "application/x-mpegURL"), None)
-                
+
                 if mpd_url is None:
                     if m3u8_url is None:
                         if mp4_url is None:
-                            logger.error(f"This lecture appears to be served in different format. We currently do not support downloading this format. Please create an issue on GitHub if you need this feature.")
+                            logger.error(
+                                "This lecture appears to be served in different format. We currently do not support downloading this format. Please create an issue on GitHub if you need this feature."
+                            )
                             download_cache.mark_download_failed(download_key, "Unsupported format")
                         else:
                             download_mp4(mp4_url, temp_folder_path, f"{lindex}. {lecture_title}", task_id, progress)
@@ -292,17 +305,19 @@ class Udemy:
                 else:
                     if key is None:
                         logger.warning("The video appears to be DRM-protected, and it may not play without a valid Widevine decryption key.")
-                    download_and_merge_mpd(mpd_url, temp_folder_path, f"{lindex}. {lecture_title}", lecture['asset']['time_estimation'], key, task_id, progress)
+                    download_and_merge_mpd(
+                        mpd_url, temp_folder_path, f"{lindex}. {lecture_title}", lecture['asset']['time_estimation'], key, task_id, progress
+                    )
             elif not skip_articles and lect_info['asset']['asset_type'] == "Article":
                 download_article(self, lect_info['asset'], temp_folder_path, f"{lindex}. {lecture_title}", task_id, progress)
-            
+
             # Mark download as completed if file exists
             if os.path.exists(expected_file_path):
                 download_cache.mark_download_completed(download_key, expected_file_path)
             else:
                 # For non-video content, mark as completed anyway
                 download_cache.mark_download_completed(download_key, f"{folder_path}/{lindex}. {lecture_title}")
-                
+
         except Exception as e:
             logger.error(f"Failed to download {lecture_title}: {e}")
             download_cache.mark_download_failed(download_key, str(e))
@@ -316,31 +331,29 @@ class Udemy:
         # Initialize download cache
         download_cache = DownloadCache(course_id)
         download_cache.save_curriculum(curriculum)
-        
+
         # Show progress summary if cache exists
         if len(download_cache.cache_data["downloads"]) > 0:
             download_cache.print_progress_summary()
-        
+
         progress = Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-            ElapsedTimeColumn(),
+            SpinnerColumn(), TextColumn("[progress.description]{task.description}"), BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"), ElapsedTimeColumn(),
         )
-        
+
         tasks = {}
         futures = []
 
         with ThreadPoolExecutor(max_workers=max_concurrent_lectures) as executor, Live(progress, refresh_per_second=10):
             task_generator = (
-                (f"{mindex:02}" if mindex < 10 else f"{mindex}", 
-                chapter, 
-                f"{lindex:02}" if lindex < 10 else f"{lindex}", 
-                lecture,
-                mindex)  # Add chapter index for cache
-                for mindex, chapter in enumerate(curriculum, start=1)
-                if is_valid_chapter(mindex, start_chapter, end_chapter, chapter_filter)
+                (
+                    f"{mindex:02}" if mindex < 10 else f"{mindex}",
+                    chapter,  #
+                    f"{lindex:02}" if lindex < 10 else f"{lindex}",
+                    lecture,
+                    mindex
+                )  # Add chapter index for cache
+                for mindex, chapter in enumerate(curriculum, start=1) if is_valid_chapter(mindex, start_chapter, end_chapter, chapter_filter)
                 for lindex, lecture in enumerate(chapter['children'], start=1)
                 if is_valid_lecture(mindex, lindex, start_chapter, start_lecture, end_chapter, end_lecture)
             )
@@ -352,15 +365,13 @@ class Udemy:
                     temp_folder_path = os.path.join(folder_path, str(lecture['id']))
                     self.create_directory(temp_folder_path)
                     lect_info = self.fetch_lecture_info(course_id, lecture['id'])
-                    
-                    task_id = progress.add_task(
-                        f"Downloading Lecture: {lecture['title']} ({lindex}/{len(chapter['children'])})", 
-                        total=100
-                    )
+
+                    task_id = progress.add_task(f"Downloading Lecture: {lecture['title']} ({lindex}/{len(chapter['children'])})", total=100)
                     tasks[task_id] = (lecture, lect_info, temp_folder_path, lindex, folder_path, chapter_index)
-                    
+
                     future = executor.submit(
-                        self.download_lecture, course_id, lecture, lect_info, temp_folder_path, lindex, folder_path, task_id, progress, download_cache, chapter_index
+                        self.download_lecture, course_id, lecture, lect_info, temp_folder_path, lindex, folder_path, task_id, progress,
+                        download_cache, chapter_index
                     )
 
                     futures.append((task_id, future))
@@ -373,7 +384,7 @@ class Udemy:
                     future.result()
                     try:
                         progress.remove_task(task_id)
-                    except:
+                    except (Exception):
                         pass
                     futures = [f for f in futures if f[1] != future]
 
@@ -384,49 +395,49 @@ class Udemy:
                         self.create_directory(temp_folder_path)
                         lect_info = self.fetch_lecture_info(course_id, lecture['id'])
 
-                        task_id = progress.add_task(
-                            f"Downloading Lecture: {lecture['title']} ({lindex}/{len(chapter['children'])})",
-                            total=100
-                        )
+                        task_id = progress.add_task(f"Downloading Lecture: {lecture['title']} ({lindex}/{len(chapter['children'])})", total=100)
                         tasks[task_id] = (lecture, lect_info, temp_folder_path, lindex, folder_path, chapter_index)
 
                         future = executor.submit(
-                            self.download_lecture, course_id, lecture, lect_info, temp_folder_path, lindex, folder_path, task_id, progress, download_cache, chapter_index
+                            self.download_lecture, course_id, lecture, lect_info, temp_folder_path, lindex, folder_path, task_id, progress,
+                            download_cache, chapter_index
                         )
 
                         futures.append((task_id, future))
                     except StopIteration:
                         break
 
+
 def check_prerequisites():
     if not COOKIES_PATH:
         if not os.path.isfile(os.path.join(HOME_DIR, "cookies.txt")):
-            logger.error(f"Please provide a valid cookie file using the '--cookie' option.")
+            logger.error("Please provide a valid cookie file using the '--cookie' option.")
             return False
     else:
         if not os.path.isfile(COOKIES_PATH):
-            logger.error(f"The provided cookie file path does not exist.")
+            logger.error("The provided cookie file path does not exist.")
             return False
 
     try:
         subprocess.run(["ffmpeg", "-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-    except:
+    except (Exception):
         logger.error("ffmpeg is not installed or not found in the system PATH.")
         return False
-    
+
     try:
         subprocess.run([N_M3U8DL_RE_PATH, "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-    except:
+    except (Exception):
         logger.error(f"{N_M3U8DL_RE_PATH} is not installed or not found in the system PATH.")
         return False
-    
+
     # Check for Shaka Packager (preferred for DRM content)
     try:
         subprocess.run([SHAKA_PACKAGER_PATH, "--version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
-    except:
+    except (Exception):
         logger.warning(f"{SHAKA_PACKAGER_PATH} not found. DRM-protected videos may not work properly.")
-    
+
     return True
+
 
 def main():
 
@@ -441,7 +452,7 @@ def main():
         parser.add_argument("--load", "-l", help="Load course curriculum from file", action=LoadAction, const=True, nargs='?')
         parser.add_argument("--save", "-s", help="Save course curriculum to a file", action=LoadAction, const=True, nargs='?')
         parser.add_argument("--concurrent", "-cn", type=int, default=4, help="Maximum number of concurrent downloads")
-        
+
         # parser.add_argument("--quality", "-q", type=str, help="Specify the quality of the videos to download.")
         parser.add_argument("--start-chapter", type=int, help="Start the download from the specified chapter")
         parser.add_argument("--start-lecture", type=int, help="Start the download from the specified lecture")
@@ -449,7 +460,7 @@ def main():
         parser.add_argument("--end-lecture", type=int, help="End the download at the specified lecture")
         parser.add_argument("--captions", type=str, help="Specify what captions to download. Separate multiple captions with commas")
         parser.add_argument("--srt", help="Convert the captions to srt format", action=LoadAction, const=True, nargs='?')
-        
+
         parser.add_argument("--tree", help="Create a tree view of the course curriculum", action=LoadAction, nargs='?')
 
         parser.add_argument("--skip-captions", type=bool, default=False, help="Skip downloading captions", action=LoadAction, nargs='?')
@@ -457,9 +468,9 @@ def main():
         parser.add_argument("--skip-lectures", type=bool, default=False, help="Skip downloading lectures", action=LoadAction, nargs='?')
         parser.add_argument("--skip-articles", type=bool, default=False, help="Skip downloading articles", action=LoadAction, nargs='?')
         parser.add_argument("--skip-assignments", type=bool, default=False, help="Skip downloading assignments", action=LoadAction, nargs='?')
-        
+
         parser.add_argument("--chapter", type=str, help="Download specific chapters. Use comma separated values and ranges (e.g., '1,3-5,7,9-11').")
-        
+
         # Cache management options
         parser.add_argument("--clear-cache", action="store_true", help="Clear download cache and restart from beginning")
         parser.add_argument("--show-cache", action="store_true", help="Show download cache status and exit")
@@ -487,24 +498,28 @@ def main():
             return
         elif course_url and args.id:
             logger.warning("Both course ID and URL provided. Prioritizing course ID over URL.")
-        
-        if key is not None and not ":" in key:
+
+        if key and ":" not in key:
             logger.error("The provided Widevine key is either malformed or incorrect. Please check the key and try again.")
             return
-        
+
+        # If key is empty string, set it to None
+        if not key:
+            key = None
+
         if args.cookies:
             cookie_path = args.cookies
 
         if not check_prerequisites():
             return
-        
+
         udemy = Udemy()
 
         if args.id:
             course_id = args.id
         else:
             course_id = udemy.extract_course_id(course_url)
-        
+
         # Handle cache management options
         if args.clear_cache:
             if course_id:
@@ -514,7 +529,7 @@ def main():
             else:
                 logger.error("Cannot clear cache without course ID. Please provide --id or --url.")
                 return
-        
+
         if args.show_cache:
             if course_id:
                 cache = DownloadCache(course_id)
@@ -526,7 +541,7 @@ def main():
         if args.captions:
             try:
                 captions = args.captions.split(",")
-            except:
+            except (Exception):
                 logger.error("Invalid captions provided. Captions should be separated by commas.")
         else:
             captions = ["en_US"]
@@ -551,7 +566,7 @@ def main():
             if args.load is True and os.path.isfile(os.path.join(HOME_DIR, "course.json")):
                 try:
                     course_curriculum = json.load(open(os.path.join(HOME_DIR, "course.json"), "r"))
-                    logger.info(f"The course curriculum is successfully loaded from course.json")
+                    logger.info("The course curriculum is successfully loaded from course.json")
                 except json.JSONDecodeError:
                     logger.error("The course curriculum file provided is either malformed or corrupted.")
                     sys.exit(1)
@@ -582,7 +597,7 @@ def main():
                     logger.warning("Course curriculum file already exists. Overwriting the existing file.")
                 with open(os.path.join(HOME_DIR, "course.json"), "w") as f:
                     json.dump(course_curriculum, f, indent=4)
-                    logger.info(f"The course curriculum has been successfully saved to course.json")
+                    logger.info("The course curriculum has been successfully saved to course.json")
             elif args.save:
                 if (os.path.isfile(args.save)):
                     logger.warning("Course curriculum file already exists. Overwriting the existing file.")
@@ -607,7 +622,7 @@ def main():
             convert_to_srt = True
         else:
             convert_to_srt = False
-            
+
         if args.start_lecture:
             if args.start_chapter:
                 start_chapter = args.start_chapter
@@ -648,14 +663,15 @@ def main():
         end_time = time.time()
 
         elapsed_time = end_time - start_time
-        
+
         logger.info(f"Download finished in {format_time(elapsed_time)}")
 
-        logger.info("All course materials have been successfully downloaded.")    
+        logger.info("All course materials have been successfully downloaded.")
         logger.info("Download Complete.")
     except KeyboardInterrupt:
         logger.warning("Process interrupted. Exiting")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
