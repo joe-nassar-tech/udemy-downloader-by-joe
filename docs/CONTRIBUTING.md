@@ -1,6 +1,6 @@
 # Contributing to Udemy Downloader By Joe
 
-Thank you for your interest in contributing to this educational project! 
+Thank you for your interest in contributing to this educational project!
 
 ## 🎓 Educational Purpose
 
@@ -9,11 +9,13 @@ This project is strictly for **educational and research purposes only**. All con
 ## 🔧 How to Contribute
 
 ### Reporting Issues
+
 - Use GitHub Issues to report bugs or suggest features
 - Provide detailed information about the problem
 - Include your environment details (OS, Python version, etc.)
 
 ### Code Contributions
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes with clear, well-documented code
@@ -23,6 +25,7 @@ This project is strictly for **educational and research purposes only**. All con
 7. Open a Pull Request
 
 ### Code Standards
+
 - Follow Python PEP 8 style guidelines
 - Add comments for complex logic
 - Update documentation for any new features
@@ -31,6 +34,7 @@ This project is strictly for **educational and research purposes only**. All con
 ## 📝 Legal Requirements
 
 By contributing, you agree that:
+
 - Your contributions are for educational purposes only
 - You will not include any code that violates platform terms of service
 - You understand the legal implications outlined in LEGAL_DISCLAIMER.md
@@ -46,7 +50,7 @@ By contributing, you agree that:
 ## 💡 Ideas for Contributions
 
 - Performance improvements
-- Better error handling  
+- Better error handling
 - Cache system enhancements (see `download_cache.py` and `cache_manager.py`)
 - Documentation improvements
 - Cross-platform compatibility
@@ -57,9 +61,10 @@ By contributing, you agree that:
 ## 📞 Contact
 
 For questions about contributing, please:
+
 - Open an issue on GitHub for public discussion
 - Review the LEGAL_DISCLAIMER.md before contributing
 
 ---
 
-**Remember**: This tool is for educational purposes only. All contributors must respect this principle and applicable laws. 
+**Remember**: This tool is for educational purposes only. All contributors must respect this principle and applicable laws.

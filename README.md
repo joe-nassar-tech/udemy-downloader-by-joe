@@ -59,26 +59,32 @@ A powerful, feature-rich Udemy course downloader that supports both regular and 
 ## 🚀 Installation
 
 ### Method 1: Download Release (Recommended)
+
 1. Download the latest release from the [Releases page](../../releases)
 2. Extract the ZIP file to your desired location
 3. Install Python dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 ### Method 2: Clone Repository
+
 1. Clone this repository:
+
    ```bash
    git clone https://github.com/joe-nassar-tech/udemy-downloader-by-joe.git
    cd udemy-downloader-by-joe
    ```
 
 2. Install Python dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 ### Python Dependencies
+
 ```
 requests>=2.31.0
 rich>=13.7.0
@@ -92,15 +98,32 @@ python-dotenv>=1.0.0
 
 You need to provide your Udemy authentication cookies. Choose one method:
 
-**Option A: JSON Format (Recommended)**
+#### Option A: JSON Format (Recommended)
+
 1. Install a browser extension like "Cookie Editor" or "EditThisCookie"
 2. Log into Udemy in your browser
 3. Export cookies as JSON format
 4. Save as `cookies.json` in the project folder
 
-**Option B: Netscape Format**
+#### Option B: Netscape Format
+
 1. Use a tool to export cookies in Netscape format
 2. Save as `cookies.txt` in the project folder
+
+Manual Cookie Export (Chrome-like / Firefox)
+
+- Chrome-like (Chrome, Edge, Brave):
+  1. Log in to `https://www.udemy.com` in your browser.
+  2. Use an extension like **Cookie Editor** or **EditThisCookie** → select `www.udemy.com` → **Export** → **JSON** → save as `cookies.json`.
+  3. Alternatively, open DevTools (F12) → `Application` tab → `Cookies` → copy values and save manually.
+
+- Firefox:
+  1. Log in to `https://www.udemy.com`.
+  2. Use **Cookie Quick Manager** to export as JSON/Netscape or open DevTools → `Storage` tab → `Cookies` → copy manually.
+
+- After exporting, provide the file to the script using `--cookies cookies.json` (or `cookies.txt` in Netscape format).
+
+⚠️ Security: Do not commit these files and delete them after use.
 
 ### 2. Environment Configuration
 
@@ -128,6 +151,7 @@ COURSE_LINK=https://www.udemy.com/course/your-course/
 ```
 
 ### 3. Directory Structure
+
 ```
 udemy-downloader-by-joe/
 ├── main.py                 # Main application
@@ -194,28 +218,28 @@ python main.py --id 1234567 --skip-articles --skip-assignments
 
 ### Command Line Options
 
-| Option | Description | Example |
-|--------|-------------|---------|
-| `--url`, `-u` | Course URL | `--url "https://www.udemy.com/course/name/"` |
-| `--id`, `-i` | Course ID | `--id 1234567` |
-| `--key`, `-k` | Widevine decryption key | `--key "key_id:key_value"` |
-| `--cookies`, `-c` | Cookie file path | `--cookies "my_cookies.txt"` |
-| `--concurrent`, `-cn` | Concurrent downloads (1-25) | `--concurrent 8` |
-| `--start-chapter` | Start from chapter | `--start-chapter 3` |
-| `--end-chapter` | End at chapter | `--end-chapter 5` |
-| `--start-lecture` | Start from lecture | `--start-lecture 2` |
-| `--end-lecture` | End at lecture | `--end-lecture 10` |
-| `--chapter` | Specific chapters | `--chapter "1,3-5,7"` |
-| `--captions` | Subtitle languages | `--captions "en,es,fr"` |
-| `--srt` | Convert to SRT format | `--srt` |
-| `--skip-captions` | Skip subtitles | `--skip-captions` |
-| `--skip-articles` | Skip articles | `--skip-articles` |
-| `--skip-assignments` | Skip assignments | `--skip-assignments` |
-| `--save` | Save curriculum to file | `--save curriculum.json` |
-| `--load` | Load curriculum from file | `--load curriculum.json` |
-| `--tree` | Show course tree | `--tree` |
-| `--show-cache` | Show download progress | `--show-cache` |
-| `--clear-cache` | Clear cache and restart | `--clear-cache` |
+| Option                | Description                 | Example                                      |
+| --------------------- | --------------------------- | -------------------------------------------- |
+| `--url`, `-u`         | Course URL                  | `--url "https://www.udemy.com/course/name/"` |
+| `--id`, `-i`          | Course ID                   | `--id 1234567`                               |
+| `--key`, `-k`         | Widevine decryption key     | `--key "key_id:key_value"`                   |
+| `--cookies`, `-c`     | Cookie file path            | `--cookies "my_cookies.txt"`                 |
+| `--concurrent`, `-cn` | Concurrent downloads (1-25) | `--concurrent 8`                             |
+| `--start-chapter`     | Start from chapter          | `--start-chapter 3`                          |
+| `--end-chapter`       | End at chapter              | `--end-chapter 5`                            |
+| `--start-lecture`     | Start from lecture          | `--start-lecture 2`                          |
+| `--end-lecture`       | End at lecture              | `--end-lecture 10`                           |
+| `--chapter`           | Specific chapters           | `--chapter "1,3-5,7"`                        |
+| `--captions`          | Subtitle languages          | `--captions "en,es,fr"`                      |
+| `--srt`               | Convert to SRT format       | `--srt`                                      |
+| `--skip-captions`     | Skip subtitles              | `--skip-captions`                            |
+| `--skip-articles`     | Skip articles               | `--skip-articles`                            |
+| `--skip-assignments`  | Skip assignments            | `--skip-assignments`                         |
+| `--save`              | Save curriculum to file     | `--save curriculum.json`                     |
+| `--load`              | Load curriculum from file   | `--load curriculum.json`                     |
+| `--tree`              | Show course tree            | `--tree`                                     |
+| `--show-cache`        | Show download progress      | `--show-cache`                               |
+| `--clear-cache`       | Clear cache and restart     | `--clear-cache`                              |
 
 ## 🔧 DRM Content Support
 
@@ -230,6 +254,7 @@ The key format should be: `key_id:key_value` (colon-separated)
 ## 📁 Output Structure
 
 Downloaded courses are organized as follows:
+
 ```
 courses/
 └── Course Name/
@@ -249,21 +274,25 @@ courses/
 ## 🎯 Examples
 
 ### Download Complete Course
+
 ```bash
 python main.py --url "https://www.udemy.com/course/python-bootcamp/"
 ```
 
 ### Download Specific Chapters with Subtitles
+
 ```bash
 python main.py --id 1234567 --chapter "1,3-5" --captions "en,es" --srt
 ```
 
 ### Download DRM Course with High Concurrency
+
 ```bash
 python main.py --url "https://www.udemy.com/course/advanced-react/" --key "key_id:key_value" --concurrent 10
 ```
 
 ### Download and Save Curriculum for Later
+
 ```bash
 python main.py --id 1234567 --save course_curriculum.json --tree course_tree.txt
 ```
@@ -289,6 +318,7 @@ python main.py --id 1234567 --save course_curriculum.json --tree course_tree.txt
    - Check course accessibility (enrolled/free)
 
 4. **Missing Dependencies**
+
    ```bash
    pip install --upgrade -r requirements.txt
    ```
@@ -310,13 +340,13 @@ Comprehensive documentation is available in the [`docs/`](docs/) folder:
 
 ### 📖 Available Documentation
 
-| Document | Description |
-|----------|-------------|
+| Document                                               | Description                                                                                                                                   |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **[📘 Complete Documentation](docs/documentation.md)** | **Main technical guide** - Step-by-step installation, configuration, usage scenarios, DRM handling, cache system details, and troubleshooting |
-| **[🧪 Testing Guide](docs/test.md)** | **Comprehensive testing procedures** - Test every feature from basic setup to advanced functionality, includes automated testing scripts |
-| **[📋 Project Summary](docs/SUMMARY.md)** | **Project overview** - What the tool does, capabilities, use cases, and technical features explanation |
-| **[🤝 Contributing Guide](docs/CONTRIBUTING.md)** | **Development guide** - How to contribute, code standards, legal requirements, and development best practices |
-| **[⚖️ Legal Disclaimer](docs/LEGAL_DISCLAIMER.md)** | **Important legal information** - Terms of use, responsibilities, and compliance requirements |
+| **[🧪 Testing Guide](docs/test.md)**                   | **Comprehensive testing procedures** - Test every feature from basic setup to advanced functionality, includes automated testing scripts      |
+| **[📋 Project Summary](docs/SUMMARY.md)**              | **Project overview** - What the tool does, capabilities, use cases, and technical features explanation                                        |
+| **[🤝 Contributing Guide](docs/CONTRIBUTING.md)**      | **Development guide** - How to contribute, code standards, legal requirements, and development best practices                                 |
+| **[⚖️ Legal Disclaimer](docs/LEGAL_DISCLAIMER.md)**    | **Important legal information** - Terms of use, responsibilities, and compliance requirements                                                 |
 
 ### 🚀 Quick Start
 
@@ -335,7 +365,7 @@ Contributions are welcome! Please read our [Contributing Guide](docs/CONTRIBUTIN
 
 ## ⚠️ Disclaimer
 
-This tool is intended for personal use only. Users are responsible for complying with Udemy's Terms of Service and applicable laws. The developers assume no responsibility for misuse of this tool. 
+This tool is intended for personal use only. Users are responsible for complying with Udemy's Terms of Service and applicable laws. The developers assume no responsibility for misuse of this tool.
 
 **Please read the [Legal Disclaimer](docs/LEGAL_DISCLAIMER.md) before using this software.**
 
