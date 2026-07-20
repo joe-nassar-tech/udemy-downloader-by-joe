@@ -1,0 +1,11 @@
+[
+  {
+    "domain": ".example-course-site.com",
+    "hostOnly": false,
+    "path": "/",
+    "secure": true,
+    "expirationDate": 1999999999,
+    "name": "sessionid",
+    "value": "PUT_YOUR_OWN_EXPORTED_VALUE_HERE"
+  }
+]

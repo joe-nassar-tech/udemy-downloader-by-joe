@@ -27,6 +27,7 @@ from utils.process_assets import download_supplementary_assets
 from utils.process_articles import download_article
 from utils.process_mp4 import download_mp4
 from download_cache import DownloadCache
+from utils.download_result import DownloadResult
 from dotenv import load_dotenv
 
 console = Console()
@@ -50,30 +51,26 @@ if sys.platform == "win32":
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
     sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer)
 
-# Convert cookies.json to cookies.txt if cookies.txt does not exist or is empty
-if (not os.path.exists(COOKIES_PATH)) or os.path.getsize(COOKIES_PATH) == 0:
-    if os.path.exists(COOKIES_JSON_PATH):
-        try:
-            with open(COOKIES_JSON_PATH, 'r', encoding='utf-8') as f:
-                cookies_json = json.load(f)
-            with open(COOKIES_PATH, 'w', encoding='utf-8') as f:
-                f.write("# Netscape HTTP Cookie File\n")
-                for cookie in cookies_json:
-                    domain = cookie.get('domain', '')
-                    flag = 'TRUE' if cookie.get('hostOnly', False) is False else 'FALSE'
-                    path = cookie.get('path', '/')
-                    secure = 'TRUE' if cookie.get('secure', False) else 'FALSE'
-                    expiration = str(cookie.get('expirationDate', 0))
-                    name = cookie.get('name', '')
-                    value = cookie.get('value', '')
-                    f.write(f"{domain}\t{flag}\t{path}\t{secure}\t{expiration}\t{name}\t{value}\n")
-        except Exception as e:
-            print(f"[ERROR] Failed to convert cookies.json to cookies.txt: {e}")
-            print("Please paste your browser-exported cookies in cookies.json.")
-            exit(1)
-    else:
-        print("[ERROR] No cookies found. Please paste your browser-exported cookies in cookies.json.")
-        exit(1)
+def ensure_cookie_file(cookie_path):
+    """Create a Netscape cookie file only when the selected cookie path is absent."""
+    if os.path.exists(cookie_path) and os.path.getsize(cookie_path) > 0:
+        return
+    if not os.path.exists(COOKIES_JSON_PATH):
+        raise RuntimeError("No cookie file was provided and cookies.json is missing.")
+    try:
+        with open(COOKIES_JSON_PATH, 'r', encoding='utf-8') as source:
+            cookies_json = json.load(source)
+        with open(cookie_path, 'w', encoding='utf-8') as target:
+            target.write("# Netscape HTTP Cookie File\n")
+            for cookie in cookies_json:
+                domain = cookie.get('domain', '')
+                flag = 'TRUE' if cookie.get('hostOnly', False) is False else 'FALSE'
+                path = cookie.get('path', '/')
+                secure = 'TRUE' if cookie.get('secure', False) else 'FALSE'
+                expiration = str(cookie.get('expirationDate', 0))
+                target.write(f"{domain}\t{flag}\t{path}\t{secure}\t{expiration}\t{cookie.get('name', '')}\t{cookie.get('value', '')}\n")
+    except (OSError, json.JSONDecodeError) as error:
+        raise RuntimeError(f"Failed to prepare the cookie file: {error}") from error
 
 
 def parse_chapter_filter(chapter_str):
@@ -113,14 +110,11 @@ class Udemy:
 
     def request(self, url):
         try:
-            response = requests.get(url, cookies=cookie_jar, stream=True)
+            response = requests.get(url, cookies=cookie_jar, stream=True, timeout=(15, 120))
             response.raise_for_status()
             return response
-        except Exception as e:
-            logger.critical(
-                f"There was a problem reaching the Udemy server: {e}. This could be due to network issues, an invalid URL, or Udemy being temporarily unavailable."
-            )
-            sys.exit(1)
+        except requests.RequestException as e:
+            raise RuntimeError(f"Udemy request failed for {url}: {e}") from e
 
     def extract_course_id(self, course_url):
 
@@ -280,43 +274,61 @@ class Udemy:
         download_key = download_cache.mark_download_started(chapter_index, lindex, lecture_title, lecture['id'], lect_info['asset']['asset_type'])
 
         try:
-            if not skip_captions and len(lect_info["asset"]["captions"]) > 0:
-                download_captions(lect_info["asset"]["captions"], folder_path, f"{lindex}. {lecture_title}", captions, convert_to_srt)
+            asset = lect_info.get("asset") or {}
+            if not skip_captions and asset.get("captions"):
+                caption_result = download_captions(asset["captions"], folder_path, f"{lindex}. {lecture_title}", captions, convert_to_srt)
+                if not caption_result.success:
+                    raise RuntimeError(caption_result.error)
 
-            if not skip_assets and len(lecture["supplementary_assets"]) > 0:
-                download_supplementary_assets(self, lecture["supplementary_assets"], folder_path, course_id, lect_info["id"])
+            if not skip_assets and lecture.get("supplementary_assets"):
+                assets_dir = os.path.join(folder_path, f"{lindex}. {lecture_title}.assets")
+                assets_result = download_supplementary_assets(self, lecture["supplementary_assets"], assets_dir, course_id, lect_info["id"])
+                if not assets_result.success:
+                    raise RuntimeError(assets_result.error)
 
-            if not skip_lectures and lect_info['asset']['asset_type'] == "Video":
-                mpd_url = next((item['src'] for item in lect_info['asset']['media_sources'] if item['type'] == "application/dash+xml"), None)
-                mp4_url = next((item['src'] for item in lect_info['asset']['media_sources'] if item['type'] == "video/mp4"), None)
-                m3u8_url = next((item['src'] for item in lect_info['asset']['media_sources'] if item['type'] == "application/x-mpegURL"), None)
+            if asset.get('asset_type') == "Video":
+                if skip_lectures:
+                    progress.console.log(f"[yellow]Skipped video {lecture_title}; it was not added to the cache.[/yellow]")
+                    return
+                sources = asset.get("media_sources") or []
+                mpd_url = next((item.get('src') for item in sources if item.get('type') == "application/dash+xml"), None)
+                mp4_url = next((item.get('src') for item in sources if item.get('type') == "video/mp4"), None)
+                m3u8_url = next((item.get('src') for item in sources if item.get('type') == "application/x-mpegURL"), None)
 
                 if mpd_url is None:
                     if m3u8_url is None:
                         if mp4_url is None:
-                            logger.error(
-                                "This lecture appears to be served in different format. We currently do not support downloading this format. Please create an issue on GitHub if you need this feature."
-                            )
-                            download_cache.mark_download_failed(download_key, "Unsupported format")
+                            result = DownloadResult.failed("No supported media source was supplied by the course API.")
                         else:
-                            download_mp4(mp4_url, temp_folder_path, f"{lindex}. {lecture_title}", task_id, progress)
+                            result = download_mp4(mp4_url, temp_folder_path, f"{lindex}. {lecture_title}", task_id, progress)
                     else:
-                        download_and_merge_m3u8(m3u8_url, temp_folder_path, f"{lindex}. {lecture_title}", task_id, progress, key)
+                        result = download_and_merge_m3u8(m3u8_url, temp_folder_path, f"{lindex}. {lecture_title}", task_id, progress, key)
                 else:
-                    if key is None:
-                        logger.warning("The video appears to be DRM-protected, and it may not play without a valid Widevine decryption key.")
-                    download_and_merge_mpd(
+                    result = download_and_merge_mpd(
                         mpd_url, temp_folder_path, f"{lindex}. {lecture_title}", lecture['asset']['time_estimation'], key, task_id, progress
                     )
-            elif not skip_articles and lect_info['asset']['asset_type'] == "Article":
-                download_article(self, lect_info['asset'], temp_folder_path, f"{lindex}. {lecture_title}", task_id, progress)
+                if not result.success:
+                    download_cache.mark_download_failed(download_key, result.error)
+                    logger.error("%s failed: %s. Check the DEBUG lines above and verify the source URL, login cookies, and installed tools.", lecture_title, result.error)
+                    return
+            elif asset.get('asset_type') == "Article":
+                if skip_articles:
+                    progress.console.log(f"[yellow]Skipped article {lecture_title}; it was not added to the cache.[/yellow]")
+                    return
+                article_result = download_article(self, asset, temp_folder_path, f"{lindex}. {lecture_title}", task_id, progress)
+                if not article_result.success:
+                    download_cache.mark_download_failed(download_key, article_result.error)
+                    return
+                expected_file_path = os.path.join(folder_path, f"{lindex}. {lecture_title}.html")
+            else:
+                download_cache.mark_download_failed(download_key, f"Unsupported asset type: {asset.get('asset_type', 'missing')}")
+                return
 
             # Mark download as completed if file exists
-            if os.path.exists(expected_file_path):
+            if os.path.isfile(expected_file_path):
                 download_cache.mark_download_completed(download_key, expected_file_path)
             else:
-                # For non-video content, mark as completed anyway
-                download_cache.mark_download_completed(download_key, f"{folder_path}/{lindex}. {lecture_title}")
+                download_cache.mark_download_failed(download_key, f"Expected output missing: {expected_file_path}")
 
         except Exception as e:
             logger.error(f"Failed to download {lecture_title}: {e}")
@@ -390,7 +402,7 @@ class Udemy:
 
                     try:
                         mindex, chapter, lindex, lecture, chapter_index = next(task_generator)
-                        folder_path = os.path.join(COURSE_DIR, f"{mindex}. {sanitize_filename(chapter['title'])}")
+                        folder_path = os.path.join(COURSE_DIR, f"{mindex}. {remove_emojis_and_binary(sanitize_filename(chapter['title']))}")
                         temp_folder_path = os.path.join(folder_path, str(lecture['id']))
                         self.create_directory(temp_folder_path)
                         lect_info = self.fetch_lecture_info(course_id, lecture['id'])
@@ -406,6 +418,8 @@ class Udemy:
                         futures.append((task_id, future))
                     except StopIteration:
                         break
+
+        return download_cache.get_download_summary()
 
 
 def check_prerequisites():
@@ -442,7 +456,7 @@ def check_prerequisites():
 def main():
 
     try:
-        global course_url, key, cookie_path, COURSE_DIR, captions, max_concurrent_lectures, skip_captions, skip_assets, skip_lectures, skip_articles, skip_assignments, convert_to_srt, start_chapter, end_chapter, start_lecture, end_lecture, chapter_filter
+        global course_url, key, COOKIES_PATH, COURSE_DIR, captions, max_concurrent_lectures, skip_captions, skip_assets, skip_lectures, skip_articles, skip_assignments, convert_to_srt, start_chapter, end_chapter, start_lecture, end_lecture, chapter_filter
 
         parser = argparse.ArgumentParser(description="Udemy Downloader By Joe - A powerful tool for downloading Udemy courses")
         parser.add_argument("--id", "-i", type=int, required=False, help="The ID of the Udemy course to download")
@@ -463,11 +477,11 @@ def main():
 
         parser.add_argument("--tree", help="Create a tree view of the course curriculum", action=LoadAction, nargs='?')
 
-        parser.add_argument("--skip-captions", type=bool, default=False, help="Skip downloading captions", action=LoadAction, nargs='?')
-        parser.add_argument("--skip-assets", type=bool, default=False, help="Skip downloading assets", action=LoadAction, nargs='?')
-        parser.add_argument("--skip-lectures", type=bool, default=False, help="Skip downloading lectures", action=LoadAction, nargs='?')
-        parser.add_argument("--skip-articles", type=bool, default=False, help="Skip downloading articles", action=LoadAction, nargs='?')
-        parser.add_argument("--skip-assignments", type=bool, default=False, help="Skip downloading assignments", action=LoadAction, nargs='?')
+        parser.add_argument("--skip-captions", action="store_true", help="Skip downloading captions")
+        parser.add_argument("--skip-assets", action="store_true", help="Skip downloading assets")
+        parser.add_argument("--skip-lectures", action="store_true", help="Skip downloading lectures")
+        parser.add_argument("--skip-articles", action="store_true", help="Skip downloading articles")
+        parser.add_argument("--skip-assignments", action="store_true", help="Skip downloading assignments")
 
         parser.add_argument("--chapter", type=str, help="Download specific chapters. Use comma separated values and ranges (e.g., '1,3-5,7,9-11').")
 
@@ -476,6 +490,8 @@ def main():
         parser.add_argument("--show-cache", action="store_true", help="Show download cache status and exit")
 
         args = parser.parse_args()
+
+        COOKIES_PATH = args.cookies
 
         if len(sys.argv) == 1:
             print(parser.format_help())
@@ -507,25 +523,32 @@ def main():
         if not key:
             key = None
 
-        if args.cookies:
-            cookie_path = args.cookies
+        if args.id and args.show_cache:
+            DownloadCache(args.id).print_progress_summary()
+            return
+        if args.id and args.clear_cache:
+            DownloadCache(args.id).clear_cache()
+            logger.info("Download cache cleared.")
+            return
 
+        try:
+            ensure_cookie_file(COOKIES_PATH)
+        except RuntimeError as error:
+            logger.error("Authentication setup failed: %s", error)
+            return
         if not check_prerequisites():
             return
 
         udemy = Udemy()
-
-        if args.id:
-            course_id = args.id
-        else:
-            course_id = udemy.extract_course_id(course_url)
+        course_id = args.id if args.id else udemy.extract_course_id(course_url)
 
         # Handle cache management options
         if args.clear_cache:
             if course_id:
                 cache = DownloadCache(course_id)
                 cache.clear_cache()
-                logger.info("Download cache cleared. Will restart from beginning.")
+                logger.info("Download cache cleared. Run the command again to start a fresh download.")
+                return
             else:
                 logger.error("Cannot clear cache without course ID. Please provide --id or --url.")
                 return
@@ -641,7 +664,7 @@ def main():
             if args.end_chapter:
                 end_chapter = args.end_chapter
                 end_lecture = args.end_lecture
-            elif args.end_chapter:
+            else:
                 logger.error("When using --end-lecture please provide --end-chapter")
                 sys.exit(1)
         elif args.end_chapter:
@@ -659,14 +682,17 @@ def main():
         logger.info("The course download is starting. Please wait while the materials are being downloaded.")
 
         start_time = time.time()
-        udemy.download_course(course_id, course_curriculum)
+        download_summary = udemy.download_course(course_id, course_curriculum)
         end_time = time.time()
 
         elapsed_time = end_time - start_time
 
         logger.info(f"Download finished in {format_time(elapsed_time)}")
 
-        logger.info("All course materials have been successfully downloaded.")
+        if download_summary["failed"]:
+            logger.error(f"Download completed with {download_summary['failed']} failed item(s).")
+        else:
+            logger.info("All selected course materials have been successfully downloaded.")
         logger.info("Download Complete.")
     except KeyboardInterrupt:
         logger.warning("Process interrupted. Exiting")

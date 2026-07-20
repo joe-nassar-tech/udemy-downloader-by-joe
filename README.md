@@ -1,374 +1,148 @@
-# Udemy Downloader By Joe
+# Course Downloader
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Python](https://img.shields.io/badge/Python-3.8+-green.svg)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)
-![Educational](https://img.shields.io/badge/Purpose-Educational%20Only-orange.svg)
+This is a small helper program for saving course materials you are allowed to download.
 
-## ⚠️ IMPORTANT DISCLAIMERS
+Think of it like a backpack. You give it your course number, and it puts your allowed videos, articles, captions, and files into the `courses` folder.
 
-> **🎓 EDUCATIONAL PURPOSE ONLY**: This software is intended strictly for educational and research purposes. Users are solely responsible for complying with all applicable laws and terms of service.
->
-> **⚖️ LEGAL RESPONSIBILITY**: By using this software, you acknowledge that you have read and agree to the terms in [LEGAL_DISCLAIMER.md](LEGAL_DISCLAIMER.md). Misuse may result in legal consequences.
+> Only use this with courses you own or are allowed to save. Do not share your cookies or secret keys.
 
----
+## Tiny quick start
 
-A powerful, feature-rich Udemy course downloader that supports both regular and DRM-protected content. This tool allows you to download complete Udemy courses including videos, subtitles, articles, and supplementary materials for offline viewing.
+1. Install **Python 3.10 or newer**.
+2. Open PowerShell in this folder.
+3. Install the Python pieces:
 
-## ✨ Features
-
-- 📺 **Full Course Download**: Download complete courses with videos, subtitles, articles, and assets
-- 🔐 **DRM Support**: Download DRM-protected videos using Widevine decryption
-- ⚡ **Concurrent Downloads**: Multi-threaded downloading for faster speeds
-- 🎯 **Selective Download**: Choose specific chapters, lectures, or ranges to download
-- 💾 **Smart Resume System**: Automatic download resumption with zero progress loss
-- 🔄 **Intelligent Cache**: Tracks progress, handles failures, and enables selective retry
-- 📝 **Multiple Formats**: Support for subtitles in various languages and SRT conversion
-- 🎨 **Beautiful Progress**: Rich progress bars and real-time download status
-- ⚙️ **Environment Configuration**: Easy setup with `.env` file support
-- 🌐 **Cookie Authentication**: Secure authentication using browser cookies
-
-## 📋 Prerequisites
-
-### Required Software
-
-1. **Python 3.8+**
-   - Download from [python.org](https://www.python.org/downloads/)
-   - Make sure to add Python to PATH during installation
-
-2. **FFmpeg** (Required for video processing)
-   - **Windows**: Download from [ffmpeg.org](https://ffmpeg.org/download.html), extract to `C:\ffmpeg`, add `C:\ffmpeg\bin` to PATH
-   - **macOS**: `brew install ffmpeg`
-   - **Linux**: `sudo apt install ffmpeg` (Ubuntu/Debian)
-   - **Verify**: Run `ffmpeg -version`
-
-3. **N_m3u8DL-RE** (Video Downloader)
-   - Download from [N_m3u8DL-RE Releases](https://github.com/nilaoda/N_m3u8DL-RE/releases)
-   - **Windows**: Download `N_m3u8DL-RE_Beta_win-x64.zip`, rename exe to `n_m3u8dl-re.exe`
-   - **macOS/Linux**: Download appropriate version, rename to `n_m3u8dl-re`
-   - Place in your project folder
-
-4. **Shaka Packager** (For DRM content only)
-   - Download from [Shaka Packager Releases](https://github.com/shaka-project/shaka-packager/releases)
-   - **Windows**: Download `packager-win-x64.exe`, rename to `shaka-packager.exe`
-   - **macOS/Linux**: Download appropriate version, rename to `shaka-packager`
-   - Place in your project folder
-
-> 📝 **Note**: For detailed step-by-step instructions, see [Complete Documentation](docs/documentation.md)
-
-## 🚀 Installation
-
-### Method 1: Download Release (Recommended)
-
-1. Download the latest release from the [Releases page](../../releases)
-2. Extract the ZIP file to your desired location
-3. Install Python dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-### Method 2: Clone Repository
-
-1. Clone this repository:
-
-   ```bash
-   git clone https://github.com/joe-nassar-tech/udemy-downloader-by-joe.git
-   cd udemy-downloader-by-joe
-   ```
-
-2. Install Python dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-### Python Dependencies
-
-```
-requests>=2.31.0
-rich>=13.7.0
-pathvalidate>=3.2.0
-python-dotenv>=1.0.0
+```powershell
+python -m pip install -r requirements.txt
 ```
 
-## ⚙️ Configuration
+4. Copy the fake settings file:
 
-### 1. Cookie Setup (Required)
-
-You need to provide your Udemy authentication cookies. Choose one method:
-
-#### Option A: JSON Format (Recommended)
-
-1. Install a browser extension like "Cookie Editor" or "EditThisCookie"
-2. Log into Udemy in your browser
-3. Export cookies as JSON format
-4. Save as `cookies.json` in the project folder
-
-#### Option B: Netscape Format
-
-1. Use a tool to export cookies in Netscape format
-2. Save as `cookies.txt` in the project folder
-
-Manual Cookie Export (Chrome-like / Firefox)
-
-- Chrome-like (Chrome, Edge, Brave):
-  1. Log in to `https://www.udemy.com` in your browser.
-  2. Use an extension like **Cookie Editor** or **EditThisCookie** → select `www.udemy.com` → **Export** → **JSON** → save as `cookies.json`.
-  3. Alternatively, open DevTools (F12) → `Application` tab → `Cookies` → copy values and save manually.
-
-- Firefox:
-  1. Log in to `https://www.udemy.com`.
-  2. Use **Cookie Quick Manager** to export as JSON/Netscape or open DevTools → `Storage` tab → `Cookies` → copy manually.
-
-- After exporting, provide the file to the script using `--cookies cookies.json` (or `cookies.txt` in Netscape format).
-
-⚠️ Security: Do not commit these files and delete them after use.
-
-### 2. Environment Configuration
-
-Create a `.env` file in the project folder with the following configuration:
-
-```env
-# Cookie file paths
-COOKIES_PATH=cookies.txt
-COOKIES_JSON_PATH=cookies.json
-
-# Widevine key for DRM-protected content (optional)
-WIDEVINE_KEY=your_widevine_key_here
-
-# Download settings
-OUTPUT_DIR=courses
-CONCURRENT_DOWNLOADS=4
-SUBTITLE_LANG=en
-
-# Tool paths (if not in PATH)
-N_M3U8DL_RE_PATH=n_m3u8dl-re.exe
-SHAKA_PACKAGER_PATH=shaka-packager.exe
-
-# Default course URL (optional)
-COURSE_LINK=https://www.udemy.com/course/your-course/
+```powershell
+Copy-Item .env.example .env
 ```
 
-### 3. Directory Structure
+5. Put your own login cookies in `cookies.json`. Start by copying the safe example:
 
-```
-udemy-downloader-by-joe/
-├── main.py                 # Main application
-├── get_course.py          # Course ID extractor utility
-├── .env                    # Environment configuration
-├── cookies.json           # Your Udemy cookies (JSON format)
-├── cookies.txt            # Auto-generated Netscape format
-├── requirements.txt       # Python dependencies
-├── n_m3u8dl-re.exe       # Video downloader tool
-├── shaka-packager.exe    # DRM decryption tool
-├── utils/                # Utility modules
-├── courses/              # Downloaded courses (auto-created)
-└── README.md             # This file
+```powershell
+Copy-Item cookies.json.example cookies.json
 ```
 
-## 📖 Usage
+6. Add your real cookie values. Never paste them into chat, GitHub, or screenshots.
+7. Download one small part first:
 
-### Course ID Extraction
-
-First, extract the course ID from any Udemy course URL:
-
-```bash
-# Extract course ID from URL
-python get_course.py "https://www.udemy.com/course/course-name/"
-
-# Or use the default course from .env COURSE_LINK
-python get_course.py
+```powershell
+python main.py --id 123456 --start-chapter 1 --end-chapter 1
 ```
 
-### Basic Usage
+The number `123456` is only pretend. Use your own course ID.
 
-```bash
-# Download by course URL
-python main.py --url "https://www.udemy.com/course/course-name/"
+## What you need
 
-# Download by course ID (recommended)
-python main.py --id 1234567
+| Thing | Why you need it |
+|---|---|
+| Python | Runs this program. |
+| FFmpeg | Joins video and sound. |
+| N_m3u8DL-RE | Saves video streams. |
+| Shaka Packager | Needed only when a course provider gives you a lawful decryption key. |
+| Your own cookies | Lets the course website know it is you. |
 
-# Download with custom concurrent downloads
-python main.py --id 1234567 --concurrent 8
+Read [the setup guide](docs/documentation.md) for friendly step-by-step help.
+
+## Common commands
+
+```powershell
+# Download a course by its number
+python main.py --id 123456
+
+# Download only chapters 1 and 2
+python main.py --id 123456 --start-chapter 1 --end-chapter 2
+
+# Download one lecture
+python main.py --id 123456 --start-chapter 1 --start-lecture 1 --end-chapter 1 --end-lecture 1
+
+# See the saved-progress list
+python main.py --id 123456 --show-cache
+
+# Forget saved progress (this does not delete finished files)
+python main.py --id 123456 --clear-cache
 ```
 
-### Advanced Usage
+## Every command and flag
 
-```bash
-# Download specific chapters
-python main.py --id 1234567 --start-chapter 3 --end-chapter 5
+Start every download command with:
 
-# Download specific lectures within a chapter
-python main.py --id 1234567 --start-chapter 2 --start-lecture 5 --end-chapter 2 --end-lecture 10
-
-# Download with custom chapter selection
-python main.py --id 1234567 --chapter "1,3-5,7,9-11"
-
-# Download with DRM key
-python main.py --url "https://www.udemy.com/course/course-name/" --key "your_widevine_key"
-
-# Download with custom subtitles
-python main.py --id 1234567 --captions "en,es,fr" --srt
-
-# Skip certain content types
-python main.py --id 1234567 --skip-articles --skip-assignments
+```powershell
+python main.py
 ```
 
-### Command Line Options
+Then add one or more little switches called **flags**. A flag starts with `--`.
 
-| Option                | Description                 | Example                                      |
-| --------------------- | --------------------------- | -------------------------------------------- |
-| `--url`, `-u`         | Course URL                  | `--url "https://www.udemy.com/course/name/"` |
-| `--id`, `-i`          | Course ID                   | `--id 1234567`                               |
-| `--key`, `-k`         | Widevine decryption key     | `--key "key_id:key_value"`                   |
-| `--cookies`, `-c`     | Cookie file path            | `--cookies "my_cookies.txt"`                 |
-| `--concurrent`, `-cn` | Concurrent downloads (1-25) | `--concurrent 8`                             |
-| `--start-chapter`     | Start from chapter          | `--start-chapter 3`                          |
-| `--end-chapter`       | End at chapter              | `--end-chapter 5`                            |
-| `--start-lecture`     | Start from lecture          | `--start-lecture 2`                          |
-| `--end-lecture`       | End at lecture              | `--end-lecture 10`                           |
-| `--chapter`           | Specific chapters           | `--chapter "1,3-5,7"`                        |
-| `--captions`          | Subtitle languages          | `--captions "en,es,fr"`                      |
-| `--srt`               | Convert to SRT format       | `--srt`                                      |
-| `--skip-captions`     | Skip subtitles              | `--skip-captions`                            |
-| `--skip-articles`     | Skip articles               | `--skip-articles`                            |
-| `--skip-assignments`  | Skip assignments            | `--skip-assignments`                         |
-| `--save`              | Save curriculum to file     | `--save curriculum.json`                     |
-| `--load`              | Load curriculum from file   | `--load curriculum.json`                     |
-| `--tree`              | Show course tree            | `--tree`                                     |
-| `--show-cache`        | Show download progress      | `--show-cache`                               |
-| `--clear-cache`       | Clear cache and restart     | `--clear-cache`                              |
+| Flag | Short name | What it means in simple words | Example |
+|---|---|---|---|
+| `--id NUMBER` | `-i` | Download the course with this number. | `--id 123456` |
+| `--url URL` | `-u` | Use a course web address instead of a number. | `--url "https://www.udemy.com/course/example-course/"` |
+| `--cookies FILE` | `-c` | Use this cookie file instead of `cookies.txt`. | `--cookies my-cookies.txt` |
+| `--concurrent NUMBER` | `-cn` | Download this many lessons at one time. Start with `2`. | `--concurrent 2` |
+| `--start-chapter NUMBER` | — | Start at this chapter. | `--start-chapter 2` |
+| `--end-chapter NUMBER` | — | Stop after this chapter. | `--end-chapter 4` |
+| `--start-lecture NUMBER` | — | Start at this lesson inside the starting chapter. Use `--start-chapter` too. | `--start-chapter 1 --start-lecture 2` |
+| `--end-lecture NUMBER` | — | Stop at this lesson inside the ending chapter. Use `--end-chapter` too. | `--end-chapter 1 --end-lecture 5` |
+| `--chapter LIST` | — | Pick chapters. Commas mean “and”; `-` means “through.” | `--chapter "1,3-5"` |
+| `--captions LIST` | — | Save captions for these language names. | `--captions en_US` |
+| `--srt` | — | Turn VTT captions into SRT captions. | `--captions en_US --srt` |
+| `--skip-captions` | — | Do not save captions. | `--skip-captions` |
+| `--skip-assets` | — | Do not save extra files, such as PDFs. | `--skip-assets` |
+| `--skip-lectures` | — | Do not save video lessons. | `--skip-lectures` |
+| `--skip-articles` | — | Do not save written lessons. | `--skip-articles` |
+| `--skip-assignments` | — | Ask the program to skip assignments. | `--skip-assignments` |
+| `--save [FILE]` | `-s` | Save the course list to a JSON file. No file name means `course.json`. | `--save my-course.json` |
+| `--load [FILE]` | `-l` | Use a saved course list. No file name means `course.json`. | `--load my-course.json` |
+| `--tree [FILE]` | — | Show the course as a little tree. You may also save the tree to a file. | `--tree course-tree.txt` |
+| `--show-cache` | — | Show what the program remembers as finished or failed. | `--id 123456 --show-cache` |
+| `--clear-cache` | — | Forget saved progress for one course. Finished video files stay on your computer. | `--id 123456 --clear-cache` |
+| `--key VALUE` | `-k` | Provide lawful authorization given by the content provider for protected material. Keep it private. | `--key "PROVIDER_GIVEN_VALUE"` |
 
-## 🔧 DRM Content Support
+### Copy-and-paste examples
 
-For DRM-protected courses, you need a Widevine decryption key:
+```powershell
+# One whole course
+python main.py --id 123456
 
-1. **Obtain Widevine Key**: Use tools like `yt-dlp` with `--allow-unplayable-formats` or browser extensions
-2. **Set in Environment**: Add to `.env` file as `WIDEVINE_KEY=key_id:key_value`
-3. **Command Line**: Use `--key "key_id:key_value"`
+# Only chapter 1
+python main.py --id 123456 --start-chapter 1 --end-chapter 1
 
-The key format should be: `key_id:key_value` (colon-separated)
+# Chapters 1, 3, 4, and 5
+python main.py --id 123456 --chapter "1,3-5"
 
-## 📁 Output Structure
+# Only captions, no videos
+python main.py --id 123456 --skip-lectures --captions en_US
 
-Downloaded courses are organized as follows:
-
-```
-courses/
-└── Course Name/
-    ├── 01. Chapter Name/
-    │   ├── 01. Lecture Title.mp4
-    │   ├── 02. Another Lecture.mp4
-    │   ├── subtitles/
-    │   │   ├── 01. Lecture Title.en.vtt
-    │   │   └── 01. Lecture Title.es.vtt
-    │   └── resources/
-    │       ├── assignment.pdf
-    │       └── source-code.zip
-    └── 02. Next Chapter/
-        └── ...
+# Look at saved progress
+python main.py --id 123456 --show-cache
 ```
 
-## 🎯 Examples
+## Where are my files?
 
-### Download Complete Course
+Look in:
 
-```bash
-python main.py --url "https://www.udemy.com/course/python-bootcamp/"
+```text
+courses\Your Course Name\
 ```
 
-### Download Specific Chapters with Subtitles
+## Help pages
 
-```bash
-python main.py --id 1234567 --chapter "1,3-5" --captions "en,es" --srt
-```
+- [Setup and beginner guide](docs/documentation.md)
+- [Troubleshooting](docs/TROUBLESHOOTING.md)
+- [Safe cookie example](cookies.json.example)
+- [Configuration example](.env.example)
+- [Legal and safety rules](docs/LEGAL_DISCLAIMER.md)
+- [How to help improve the project](docs/CONTRIBUTING.md)
 
-### Download DRM Course with High Concurrency
+## A note about protected videos
 
-```bash
-python main.py --url "https://www.udemy.com/course/advanced-react/" --key "key_id:key_value" --concurrent 10
-```
+Some videos have a lock called DRM. This program can only process such material when you have a valid, lawful decryption key supplied through an authorized route. A key can be different for different videos. If a protected video does not work, use the course provider's official offline feature or ask its support team/instructor for help. Do not try to extract, guess, or share keys.
 
-### Download and Save Curriculum for Later
+## License
 
-```bash
-python main.py --id 1234567 --save course_curriculum.json --tree course_tree.txt
-```
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Authentication Error**
-   - Ensure cookies are fresh (login to Udemy recently)
-   - Check cookie format (JSON or Netscape)
-   - Verify cookie file path in `.env`
-
-2. **DRM Videos Won't Play**
-   - Verify Widevine key format: `key_id:key_value`
-   - Ensure Shaka Packager is installed and in PATH
-   - Check that the key is not expired
-
-3. **Download Failures**
-   - Check internet connection
-   - Reduce concurrent downloads: `--concurrent 2`
-   - Verify FFmpeg installation
-   - Check course accessibility (enrolled/free)
-
-4. **Missing Dependencies**
-
-   ```bash
-   pip install --upgrade -r requirements.txt
-   ```
-
-5. **Path Issues (Windows)**
-   - Use quotes around paths with spaces
-   - Check that tools are in PATH or `.env` paths are correct
-
-### Performance Tips
-
-- **Optimal Concurrency**: Start with 4, increase gradually
-- **Network**: Use wired connection for stability
-- **Storage**: Ensure sufficient disk space
-- **System**: Close unnecessary applications during download
-
-## 📚 Documentation
-
-Comprehensive documentation is available in the [`docs/`](docs/) folder:
-
-### 📖 Available Documentation
-
-| Document                                               | Description                                                                                                                                   |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **[📘 Complete Documentation](docs/documentation.md)** | **Main technical guide** - Step-by-step installation, configuration, usage scenarios, DRM handling, cache system details, and troubleshooting |
-| **[🧪 Testing Guide](docs/test.md)**                   | **Comprehensive testing procedures** - Test every feature from basic setup to advanced functionality, includes automated testing scripts      |
-| **[📋 Project Summary](docs/SUMMARY.md)**              | **Project overview** - What the tool does, capabilities, use cases, and technical features explanation                                        |
-| **[🤝 Contributing Guide](docs/CONTRIBUTING.md)**      | **Development guide** - How to contribute, code standards, legal requirements, and development best practices                                 |
-| **[⚖️ Legal Disclaimer](docs/LEGAL_DISCLAIMER.md)**    | **Important legal information** - Terms of use, responsibilities, and compliance requirements                                                 |
-
-### 🚀 Quick Start
-
-1. **New Users**: Start with [📘 Complete Documentation](docs/documentation.md)
-2. **Developers**: Check [🤝 Contributing Guide](docs/CONTRIBUTING.md)
-3. **Testing**: Use [🧪 Testing Guide](docs/test.md) to verify functionality
-4. **Legal**: Read [⚖️ Legal Disclaimer](docs/LEGAL_DISCLAIMER.md) before use
-
-## 📄 License
-
-This project is for educational purposes only. Please respect Udemy's Terms of Service and only download courses you have legitimate access to.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](docs/CONTRIBUTING.md) for detailed information on how to contribute to this project.
-
-## ⚠️ Disclaimer
-
-This tool is intended for personal use only. Users are responsible for complying with Udemy's Terms of Service and applicable laws. The developers assume no responsibility for misuse of this tool.
-
-**Please read the [Legal Disclaimer](docs/LEGAL_DISCLAIMER.md) before using this software.**
-
----
-
-**Created by Joe** - A powerful tool for offline learning 📚
+See [LICENSE](LICENSE).

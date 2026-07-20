@@ -90,7 +90,7 @@ tmp/
 
 # Keep example files
 !env.example
-!cookies.json
 !*.md
 !LICENSE
 !requirements.txt
+!cookies.json.example
